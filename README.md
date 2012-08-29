@@ -17,18 +17,18 @@ yet, but there will be a documentation when I have the time to write one.
 By now, just scroll through the code or implement the library in your program and
 test a bit. I wrote some example applications, too.
 
-Legend:
-+         Implemented
-o         Somewhere between Missing and Implemented
--         Missing
-Feature list:
-+         Connection establishing
-+         Logging in
-+         Sending commands
-+         Receiving answer and stuffing everything in a QueryResponse class
-+         Communication logging
-o         Server management (nearly done)
-o         Channel management (nearly done)
--         Client management
--         Permission management
--         Everything else I didn't know it's missing
+**Legend:**
+- '+':      Implemented
+- 'o':      Somewhere between Missing and Implemented
+- '-':      Missing
+**Feature list:**
+- '+':      Connection establishing
+- '+':      Logging in
+- '+':      Sending commands
+- '+':      Receiving answer and stuffing everything in a QueryResponse class
+- '+':      Communication logging
+- 'o':      Server management (nearly done)
+- 'o':      Channel management (nearly done)
+- '-':      Client management
+- '-':      Permission management
+- '-':      Everything else I didn't know it's missing
