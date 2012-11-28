@@ -6,7 +6,7 @@ An object-oriented TeamSpeak3 library
 "Yet Another TeamSpeak Query" (The O stands for Object Oriented)
 
 There are already plenty libraries out there, but none of them really fulfilled
-my needs. Some where everything but object oriented resulting in some kind of
+my needs. Some were everything but object oriented, resulting in some kind of
 library for the library, others didn't implement the protocol in a very nice way.
 
 So I decided to write my own library and this is what I have come up with so far.
