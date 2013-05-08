@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2013 Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>.
+ *
+ * YATSQUO is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * YATSQUO is distributed in the hope that it will
+ * be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with YATSQUO; If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 package net.servertube.QueryInterface;
 
 import java.io.BufferedReader;
@@ -22,32 +39,32 @@ public class QueryInterface {
   private Socket socket = null;
   private boolean bConnected = false;
   /**
-   * 
+   *
    */
   protected int iServerID = -1;
   /**
-   * 
+   *
    */
   protected int iChannelID = -1;
   /**
-   * 
+   *
    */
   protected int iClientID = -1;
   private List<Server> servers = new ArrayList<Server>();
   //private List qList = new ArrayList<QueryListener>();
   /**
-   * 
+   *
    */
   protected QueryListener queryListener;
 
   /**
-   * 
+   *
    */
   public QueryInterface() {
   }
 
   /**
-   * 
+   *
    * @return
    */
   public boolean isConnected() {
@@ -56,7 +73,7 @@ public class QueryInterface {
   }
 
   /**
-   * 
+   *
    * @return
    */
   public BufferedReader getInStream() {
@@ -64,7 +81,7 @@ public class QueryInterface {
   }
 
   /**
-   * 
+   *
    * @param ql
    */
   public void registerQueryListener(QueryListener ql) {
@@ -73,7 +90,7 @@ public class QueryInterface {
   }
 
   /**
-   * 
+   *
    * @return
    */
   public QueryListener getQueryListener() {
@@ -81,7 +98,7 @@ public class QueryInterface {
   }
 
   /**
-   * 
+   *
    * @param ip
    * @param port
    * @return
@@ -136,7 +153,7 @@ public class QueryInterface {
   }
 
   /**
-   * 
+   *
    * @return
    * @throws QueryException
    */
@@ -157,7 +174,7 @@ public class QueryInterface {
   }
 
   /**
-   * 
+   *
    * @param command
    * @return
    * @throws QueryException
@@ -172,7 +189,7 @@ public class QueryInterface {
   }
 
   /**
-   * 
+   *
    * @param command
    * @return
    * @throws QueryException
@@ -251,7 +268,7 @@ public class QueryInterface {
   }
 
   /**
-   * 
+   *
    * @param user
    * @param pass
    * @return
@@ -269,9 +286,9 @@ public class QueryInterface {
 
     return true;
   }
-  
+
   /**
-   * 
+   *
    * @return
    * @throws QueryException
    */
@@ -284,7 +301,7 @@ public class QueryInterface {
   }
 
   /**
-   * 
+   *
    * @param id
    * @return
    * @throws QueryException
@@ -294,7 +311,7 @@ public class QueryInterface {
   }
 
   /**
-   * 
+   *
    * @param id
    * @return
    * @throws QueryException
@@ -308,7 +325,7 @@ public class QueryInterface {
   }
 
   /**
-   * 
+   *
    * @return
    * @throws QueryException
    */
@@ -326,7 +343,7 @@ public class QueryInterface {
   }
 
   /**
-   * 
+   *
    * @param id
    * @return
    * @throws QueryException
@@ -351,17 +368,17 @@ public class QueryInterface {
     }
     return null;
   }
-  
+
   /**
-   * 
+   *
    * @return
    */
   public List<Server> getServers() {
     return servers;
   }
-  
+
   /**
-   * 
+   *
    * @param server
    */
   protected void registerServer(Server server) {

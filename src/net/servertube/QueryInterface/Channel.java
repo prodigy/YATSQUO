@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2013 Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>.
+ *
+ * YATSQUO is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * YATSQUO is distributed in the hope that it will
+ * be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with YATSQUO; If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 package net.servertube.QueryInterface;
 
 import java.util.HashMap;
@@ -272,7 +289,7 @@ public class Channel {
 
   /**
    * Get the used Codec
-   * 
+   *
    * @return
    */
   public Codec getCodec() {
@@ -452,7 +469,7 @@ public class Channel {
   }
 
   /**
-   * 
+   *
    * @return
    */
   public boolean isMaxclients_unlimited() {
@@ -460,7 +477,7 @@ public class Channel {
   }
 
   /**
-   * 
+   *
    * @param maxclients_unlimited
    * @return
    * @throws QueryException
@@ -474,7 +491,7 @@ public class Channel {
   }
 
   /**
-   * 
+   *
    * @return
    */
   public int getMaxfamilityclients() {
@@ -482,7 +499,7 @@ public class Channel {
   }
 
   /**
-   * 
+   *
    * @param maxfamilyclients
    * @return
    * @throws QueryException
@@ -496,7 +513,7 @@ public class Channel {
   }
 
   /**
-   * 
+   *
    * @return
    */
   public boolean isMaxfamilyclients_inherited() {
@@ -504,7 +521,7 @@ public class Channel {
   }
 
   /**
-   * 
+   *
    * @param maxfamilyclients_inherited
    * @return
    * @throws QueryException
@@ -518,7 +535,7 @@ public class Channel {
   }
 
   /**
-   * 
+   *
    * @return
    */
   public boolean isMaxfamilyclients_unlimited() {
@@ -526,7 +543,7 @@ public class Channel {
   }
 
   /**
-   * 
+   *
    * @param maxfamilyclients_unlimited
    * @return
    * @throws QueryException
@@ -540,7 +557,7 @@ public class Channel {
   }
 
   /**
-   * 
+   *
    * @return
    */
   public String getName() {
@@ -548,7 +565,7 @@ public class Channel {
   }
 
   /**
-   * 
+   *
    * @param name
    * @return
    * @throws QueryException
@@ -562,7 +579,7 @@ public class Channel {
   }
 
   /**
-   * 
+   *
    * @return
    */
   public String getName_phonetic() {
@@ -570,7 +587,7 @@ public class Channel {
   }
 
   /**
-   * 
+   *
    * @param name_phonetic
    * @return
    * @throws QueryException
@@ -584,7 +601,7 @@ public class Channel {
   }
 
   /**
-   * 
+   *
    * @return
    */
   public int getOrder() {
@@ -592,7 +609,7 @@ public class Channel {
   }
 
   /**
-   * 
+   *
    * @param order
    * @return
    * @throws QueryException
@@ -606,7 +623,7 @@ public class Channel {
   }
 
   /**
-   * 
+   *
    * @return
    */
   public int getParentID() {
@@ -614,7 +631,7 @@ public class Channel {
   }
 
   /**
-   * 
+   *
    * @param parentID
    * @return
    * @throws QueryException
@@ -628,7 +645,7 @@ public class Channel {
   }
 
   /**
-   * 
+   *
    * @return
    */
   public String getTopic() {
@@ -636,7 +653,7 @@ public class Channel {
   }
 
   /**
-   * 
+   *
    * @param topic
    * @return
    * @throws QueryException
@@ -650,7 +667,7 @@ public class Channel {
   }
 
   /**
-   * 
+   *
    * @param password
    * @return
    * @throws QueryException
@@ -664,7 +681,7 @@ public class Channel {
   }
 
   /**
-   * 
+   *
    * @return
    */
   public boolean isPasswordProtected() {

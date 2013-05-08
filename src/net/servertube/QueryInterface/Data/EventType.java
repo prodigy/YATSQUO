@@ -1,6 +1,19 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2013 Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>.
+ *
+ * YATSQUO is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * YATSQUO is distributed in the hope that it will
+ * be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with YATSQUO; If not, see
+ * <http://www.gnu.org/licenses/>.
  */
 package net.servertube.QueryInterface.Data;
 
@@ -14,15 +27,15 @@ import java.util.List;
 public enum EventType {
 
   /**
-   * 
+   *
    */
   CLIENT_ENTERVIEW("notifycliententerview", null, null),
   /**
-   * 
+   *
    */
   CLIENT_LEFTVIEW("notifyclientleftview", null, null),
   /**
-   * 
+   *
    */
   EVENT_SERVER("notifycliententerview", "server", new ArrayList<String>() {
 
@@ -31,7 +44,7 @@ add("event");
 }
 }),
   /**
-   * 
+   *
    */
   CLIENT_MOVED("notifyclientmoved", "channel", new ArrayList<String>() {
 
@@ -41,11 +54,11 @@ add("id");
 }
 }),
   /**
-   * 
+   *
    */
   EVENT_TEXTMESSAGE("notifytextmessage", null, null),
   /**
-   * 
+   *
    */
   TEXT_SERVER("notifytextmessage", "textserver", new ArrayList<String>() {
 
@@ -54,7 +67,7 @@ add("event");
 }
 }),
   /**
-   * 
+   *
    */
   TEXT_CHANNEL("notifytextmessage", "textchannel", new ArrayList<String>() {
 
@@ -63,7 +76,7 @@ add("event");
 }
 }),
   /**
-   * 
+   *
    */
   TEXT_PRIVATE("notifytextmessage", "textprivate", new ArrayList<String>() {
 
@@ -82,7 +95,7 @@ add("event");
   }
 
   /**
-   * 
+   *
    * @return
    */
   public String getEvent() {
@@ -90,7 +103,7 @@ add("event");
   }
 
   /**
-   * 
+   *
    * @return
    */
   public String getNotifyType() {
@@ -98,7 +111,7 @@ add("event");
   }
 
   /**
-   * 
+   *
    * @return
    */
   public List<String> getParameters() {
@@ -106,7 +119,7 @@ add("event");
   }
 
   /**
-   * 
+   *
    * @param event
    * @return
    */
@@ -122,7 +135,7 @@ add("event");
   }
 
   /**
-   * 
+   *
    * @param event
    * @return
    */

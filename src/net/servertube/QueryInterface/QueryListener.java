@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2013 Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>.
+ *
+ * YATSQUO is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * YATSQUO is distributed in the hope that it will
+ * be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with YATSQUO; If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 package net.servertube.QueryInterface;
 
 import net.servertube.QueryInterface.Data.EventType;
@@ -25,7 +42,7 @@ public abstract class QueryListener {
   private TimerTask eventTimerTask = null;
 
   /**
-   * 
+   *
    * @param qi
    */
   public QueryListener(QueryInterface qi) {
@@ -35,14 +52,14 @@ public abstract class QueryListener {
   }
 
   /**
-   * 
+   *
    */
   protected final void registerQueryListener() {
     //this.qi.registerQueryListener(this);
   }
 
   /**
-   * 
+   *
    * @param on
    */
   public void setEventListenerStatus(boolean on) {
@@ -50,7 +67,7 @@ public abstract class QueryListener {
   }
 
   /**
-   * 
+   *
    * @param clearRegisteredEvents
    */
   public void disableEventListener(boolean clearRegisteredEvents) {
@@ -65,7 +82,7 @@ public abstract class QueryListener {
   }
 
   /**
-   * 
+   *
    */
   public void enableEventListener() {
     if (eventTimer != null || eventTimerTask != null) {
@@ -86,7 +103,7 @@ public abstract class QueryListener {
   public abstract void executeEvent(EventType type, HashMap<String, String> data);
 
   /**
-   * 
+   *
    * @param line
    * @return
    */
@@ -133,7 +150,7 @@ public abstract class QueryListener {
   }
 
   /**
-   * 
+   *
    * @param type
    * @param params
    * @return
@@ -164,7 +181,7 @@ public abstract class QueryListener {
   }
 
   /**
-   * 
+   *
    * @param type
    * @return
    */
@@ -177,7 +194,7 @@ public abstract class QueryListener {
   }
 
   /**
-   * 
+   *
    */
   public synchronized void eventCheck() {
     if (this.listen) {

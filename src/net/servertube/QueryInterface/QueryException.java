@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2013 Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>.
+ *
+ * YATSQUO is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * YATSQUO is distributed in the hope that it will
+ * be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with YATSQUO; If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 package net.servertube.QueryInterface;
 
 import java.util.HashMap;
@@ -9,24 +26,24 @@ import java.util.HashMap;
 public class QueryException extends Throwable {
 
   /**
-   * 
+   *
    */
   public final int ID;
   /**
-   * 
+   *
    */
   public final String msg;
   /**
-   * 
+   *
    */
   public final String extra_msg;
   /**
-   * 
+   *
    */
   public final int failed_permid;
 
   /**
-   * 
+   *
    */
   public QueryException() {
     super();
@@ -37,7 +54,7 @@ public class QueryException extends Throwable {
   }
 
   /**
-   * 
+   *
    * @param ID
    * @param msg
    * @param extra_msg
@@ -52,7 +69,7 @@ public class QueryException extends Throwable {
   }
 
   /**
-   * 
+   *
    * @param message
    */
   public QueryException(String message) {
@@ -64,7 +81,7 @@ public class QueryException extends Throwable {
   }
 
   /**
-   * 
+   *
    * @param message
    * @param data
    */
@@ -85,7 +102,7 @@ public class QueryException extends Throwable {
   }
 
   /**
-   * 
+   *
    * @param message
    * @param ID
    * @param extra_msg
@@ -100,7 +117,7 @@ public class QueryException extends Throwable {
   }
 
   /**
-   * 
+   *
    * @param message
    * @param cause
    */
@@ -113,7 +130,7 @@ public class QueryException extends Throwable {
   }
 
   /**
-   * 
+   *
    * @param message
    * @param cause
    * @param ID
@@ -129,7 +146,7 @@ public class QueryException extends Throwable {
   }
 
   /**
-   * 
+   *
    * @param cause
    */
   public QueryException(Throwable cause) {
@@ -141,7 +158,7 @@ public class QueryException extends Throwable {
   }
 
   /**
-   * 
+   *
    * @param cause
    * @param ID
    * @param extra_msg

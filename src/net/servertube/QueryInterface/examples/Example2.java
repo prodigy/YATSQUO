@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2013 Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>.
+ *
+ * YATSQUO is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * YATSQUO is distributed in the hope that it will
+ * be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with YATSQUO; If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 package net.servertube.QueryInterface.examples;
 
 import java.math.BigInteger;
@@ -22,7 +39,7 @@ public class Example2 {
   private static String passwd = "PASSWORD";
   private static String ip = "127.0.0.1";
   private static int port = 10011;
-  
+
   private QueryInterface qi;
   protected Boolean running;
 
@@ -74,7 +91,7 @@ public class Example2 {
        * and the EVENT_SERVER registered a notifyserveredited event is passed
        * which is NOT catched by the library, yet; This increases traffic
        * and reduces possible commands per second)
-       * 
+       *
        * The library still passes commands and receives the correct replies while
        * the system waits for events on another thread. All events are received.
        */

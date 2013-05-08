@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2013 Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>.
+ *
+ * YATSQUO is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * YATSQUO is distributed in the hope that it will
+ * be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with YATSQUO; If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 package net.servertube.QueryInterface;
 
 import java.util.ArrayList;
@@ -41,7 +58,7 @@ public class Server {
   private String platform;
 
   /**
-   * 
+   *
    * @param ID
    * @param port
    * @param online
@@ -59,7 +76,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @param ID
    * @param queryInterface
    */
@@ -74,7 +91,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @param ID
    * @param queryInterface
    */
@@ -83,7 +100,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @param queryInterface
    * @param name
    * @param port
@@ -128,7 +145,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @return
    * @throws QueryException
    */
@@ -190,7 +207,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @return
    * @throws QueryException
    */
@@ -203,7 +220,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @param command
    * @return
    * @throws QueryException
@@ -214,7 +231,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @param command
    * @return
    * @throws QueryException
@@ -225,7 +242,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @param command
    * @return
    * @throws QueryException
@@ -238,7 +255,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @param command
    * @return
    * @throws QueryException
@@ -251,7 +268,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @param channel
    */
   protected void registerChannel(Channel channel) {
@@ -259,7 +276,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @param channel
    */
   protected void unregisterChannel(Channel channel) {
@@ -268,7 +285,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @param type
    * @param params
    * @return
@@ -279,7 +296,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @param type
    * @return
    * @throws QueryException
@@ -332,7 +349,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @param field
    * @param value
    * @return
@@ -343,7 +360,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @param field
    * @param value
    * @return
@@ -354,7 +371,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @param field
    * @param value
    * @return
@@ -393,8 +410,8 @@ public class Server {
    * Set the value of port
    *
    * @param port new value of port
-   * @return 
-   * @throws QueryException  
+   * @return
+   * @throws QueryException
    */
   public boolean setPort(int port) throws QueryException {
     if (this.updateFieldValue("virtualserver_port", port)) {
@@ -417,7 +434,7 @@ public class Server {
    * Set the value of online
    *
    * @param online new value of online
-   * @throws QueryException  
+   * @throws QueryException
    */
   public void setOnline(boolean online) throws QueryException {
     if (online == true) {
@@ -440,8 +457,8 @@ public class Server {
    * Set the value of maxClients
    *
    * @param maxClients new value of maxClients
-   * @return 
-   * @throws QueryException  
+   * @return
+   * @throws QueryException
    */
   public boolean setMaxClients(int maxClients) throws QueryException {
     if (this.updateFieldValue("virtualserver_maxclients", maxClients)) {
@@ -465,7 +482,7 @@ public class Server {
    *
    * @param name new value of name
    * @return
-   * @throws QueryException  
+   * @throws QueryException
    */
   public boolean setName(String name) throws QueryException {
     if (this.updateFieldValue("virtualserver_name", name)) {
@@ -488,8 +505,8 @@ public class Server {
    * Set the value of autostart
    *
    * @param autostart new value of autostart
-   * @return 
-   * @throws QueryException  
+   * @return
+   * @throws QueryException
    */
   public boolean setAutostart(boolean autostart) throws QueryException {
     if (this.updateFieldValue("virtualserver_autostart", autostart)) {
@@ -500,7 +517,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @return
    */
   public Integer getHostbanner_gfx_interval() {
@@ -508,7 +525,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @param hostbanner_gfx_interval
    * @return
    * @throws QueryException
@@ -522,7 +539,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @return
    */
   public String getHostbanner_gfx_url() {
@@ -530,7 +547,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @param hostbanner_gfx_url
    * @return
    * @throws QueryException
@@ -544,7 +561,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @return
    */
   public String getHostbanner_url() {
@@ -552,7 +569,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @param hostbanner_url
    * @return
    * @throws QueryException
@@ -566,7 +583,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @return
    */
   public String getHostbutton_gfx_url() {
@@ -574,7 +591,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @param hostbutton_gfx_url
    * @return
    * @throws QueryException
@@ -588,7 +605,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @return
    */
   public String getHostbutton_url() {
@@ -596,7 +613,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @param hostbutton_url
    * @return
    * @throws QueryException
@@ -610,7 +627,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @return
    */
   public String getHostmessage() {
@@ -618,7 +635,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @param hostmessage
    * @return
    * @throws QueryException
@@ -632,7 +649,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @return
    */
   public Integer getHostmessage_mode() {
@@ -640,7 +657,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @param hostmessage_mode
    * @return
    * @throws QueryException
@@ -654,7 +671,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @return
    */
   public String getMachine_id() {
@@ -662,7 +679,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @param machine_id
    * @return
    * @throws QueryException
@@ -676,7 +693,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @return
    */
   public Integer getReserved_slots() {
@@ -684,7 +701,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @param reserved_slots
    * @return
    * @throws QueryException
@@ -698,7 +715,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @return
    */
   public String getWelcomemessage() {
@@ -706,7 +723,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @param welcomemessage
    * @return
    * @throws QueryException
@@ -720,7 +737,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @param password
    * @return
    * @throws QueryException
@@ -734,7 +751,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @return
    */
   public Integer getCreatedAt() {
@@ -742,7 +759,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @return
    */
   public String getPlatform() {
@@ -750,7 +767,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @return
    */
   public Integer getUptime() {
@@ -758,7 +775,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @return
    */
   public String getVersion() {
@@ -766,7 +783,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @return
    * @throws QueryException
    */
@@ -783,7 +800,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @return
    * @throws QueryException
    */
@@ -800,7 +817,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @return
    */
   public List<Channel> getChannels() {
@@ -808,7 +825,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @param id
    * @return
    */
@@ -822,7 +839,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @return
    * @throws QueryException
    */
@@ -835,7 +852,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @param key
    * @param value
    * @return
@@ -848,7 +865,7 @@ public class Server {
   }
 
   /**
-   * 
+   *
    * @param parameters
    * @return
    * @throws QueryException
@@ -858,8 +875,8 @@ public class Server {
     this.fillServerInfo();
     return ret;
   }
-  
+
   /*public DBClient getClientFromDBbyPattern(String pattern) {
-    
+
   }*/
 }
