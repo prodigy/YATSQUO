@@ -17,13 +17,6 @@
  */
 package net.servertube.yatsquo;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.net.Socket;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
@@ -34,28 +27,46 @@ import java.util.HashMap;
  */
 public class QueryInterface {
 
-  private BufferedReader in = null;
-  private PrintStream out = null;
-  private Socket socket = null;
-  private boolean bConnected = false;
   /**
    *
    */
-  protected int iServerID = -1;
+  private String ip = null;
   /**
    *
    */
-  protected int iChannelID = -1;
+  private Integer port = null;
   /**
    *
    */
-  protected int iClientID = -1;
+  private String user = null;
+  /**
+   *
+   */
+  private String pass = null;
+  /**
+   *
+   */
+  public QueryConnection qCon = null;
+  /**
+   *
+   */
+  protected int serverID = -1;
+  /**
+   *
+   */
+  protected int channelID = -1;
+  /**
+   *
+   */
+  protected int clientID = -1;
+  /**
+   *
+   */
   private List<Server> servers = new ArrayList<Server>();
-  //private List qList = new ArrayList<QueryListener>();
   /**
    *
    */
-  protected QueryListener queryListener;
+  protected List<QueryListener> listeners;
 
   /**
    *
@@ -65,19 +76,26 @@ public class QueryInterface {
 
   /**
    *
-   * @return
+   * @param ip
+   * @param port
+   * @param user
+   * @param passwd
    */
-  public boolean isConnected() {
-    //return bConnected;
-    return this.socket.isConnected();
+  public QueryInterface(String ip, int port, String user, String passwd) throws QueryException {
+    initialize(ip, port, user, passwd);
   }
 
   /**
    *
-   * @return
+   * @param ip
+   * @param port
+   * @param user
+   * @param passwd
+   * @throws QueryException
    */
-  public BufferedReader getInStream() {
-    return in;
+  private void initialize(String ip, int port, String user, String passwd) throws QueryException {
+    this.qCon = new QueryConnection(ip, port, user, passwd);
+    this.fillServerList();
   }
 
   /**
@@ -85,216 +103,28 @@ public class QueryInterface {
    * @param ql
    */
   public void registerQueryListener(QueryListener ql) {
-    //qList.add(ql);
-    queryListener = ql;
+    listeners.add(ql);
+  }
+
+  public void unregisterQueryListener(QueryListener ql) {
+    listeners.remove(ql);
   }
 
   /**
    *
    * @return
    */
-  public QueryListener getQueryListener() {
-    return queryListener;
+  public List<QueryListener> getQueryListeners() {
+    return listeners;
   }
 
   /**
    *
-   * @param ip
-   * @param port
-   * @return
-   * @throws QueryException
-   */
-  public boolean connect(String ip, int port) throws QueryException {
-    if (socket != null) {
-      throw new QueryException("Connection still open!");
-    }
-    try {
-      socket = new Socket(ip, port);
-    } catch (Exception ex) {
-      socket = null;
-      throw new QueryException("Unable to open socket: " + ex.getMessage());
-    }
-
-    if (socket.isConnected()) {
-      try {
-        in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
-        out = new PrintStream(socket.getOutputStream(), true, "UTF-8");
-
-        socket.setSoTimeout(5000);
-
-        String ident = in.readLine();
-        CommunicationLog.log(ident, false);
-        if (ident.equals("TS3")) {
-          socket.setSoTimeout(500);
-          try {
-            while (true) {
-              CommunicationLog.log(in.readLine(), false);
-            }
-          } catch (Exception ex) {
-          }
-          bConnected = true;
-        } else {
-          closeConnection();
-          throw new QueryException("No TS3 query port detected!");
-        }
-      } catch (Exception ex) {
-        socket = null;
-        throw new QueryException("Error while connecting: " + ex.getMessage());
-      }
-    } else {
-      try {
-        socket.close();
-      } catch (Exception ex) {
-      }
-      socket = null;
-      throw new QueryException("Error connecting to Query Port (unknown)!");
-    }
-    return false;
-  }
-
-  /**
-   *
-   * @return
-   * @throws QueryException
-   */
-  public boolean closeConnection() throws QueryException {
-    if (queryListener != null) {
-      queryListener.disableEventListener(true);
-    }
-    bConnected = false;
-    this.executeCommand("quit");
-    try {
-      socket.close();
-    } catch (IOException ex) {
-      System.err.println("Unknown error while closing connection");
-    } finally {
-      socket = null;
-    }
-    return true;
-  }
-
-  /**
-   *
-   * @param command
-   * @return
-   * @throws QueryException
-   */
-  public QueryResponse executeCommand(String command) throws QueryException {
-    if(!this.isConnected()) {
-      throw new QueryException("Command failed: No active connection!");
-    }
-    CommunicationLog.log(command, true);
-    this.out.println(command);
-    return this.readLine();
-  }
-
-  /**
-   *
-   * @param command
-   * @return
-   * @throws QueryException
-   */
-  public QueryResponse executeCommand(QueryCommand command) throws QueryException {
-    if(!this.isConnected()) {
-      throw new QueryException("Command failed: No active connection!");
-    }
-    CommunicationLog.log(command.toString(), true);
-    this.out.println(command.toString());
-    return this.readLine();
-  }
-
-  private QueryResponse readLine() throws QueryException {
-    if (!this.isConnected()) {
-      throw new QueryException("Cannot read from input stream: Not connected!");
-    }
-
-    if (queryListener != null) {
-      queryListener.setEventListenerStatus(false);
-    }
-    String data = "";
-    String tmp = "";
-    while (true) {
-      try {
-        tmp = this.in.readLine();
-        CommunicationLog.log(tmp, false);
-      } catch (SocketTimeoutException ex) {
-        throw new QueryException("Socket timed out while reading from input stream:\n" + ex.toString());
-      } catch (SocketException ex) {
-        throw new QueryException("Socket timed out while reading from input stream:\n" + ex.toString());
-      } catch (Exception ex) {
-        throw new QueryException("Error reading line from input Stream:\n" + ex.toString());
-      }
-
-      if (tmp == null) {
-        this.closeConnection();
-        throw new QueryException("NULL result from input stream; Connection lost?");
-      }
-
-      if (tmp.startsWith("error")) {
-        break;
-      }
-
-      if (!tmp.isEmpty()) {
-        boolean handleResult = false;
-        if (this.queryListener != null) {
-          handleResult = this.queryListener.handleEvent(tmp);
-        }
-        if (!handleResult) {
-          if (!data.isEmpty()) {
-            data += System.getProperty("line.seperator", "\n");
-          }
-          data += tmp;
-        }
-      }
-    }
-    if (queryListener != null) {
-      queryListener.setEventListenerStatus(true);
-    }
-
-    List<HashMap<String, String>> inLHM = new ArrayList<HashMap<String, String>>();
-    inLHM = QueryTools.parseInput(tmp);
-    if (inLHM == null) {
-      this.closeConnection();
-      throw new QueryException("parsing returned NULL object; Connection lost?");
-    }
-    /*if(!inLHM.get(0).get("id").equals("0")) {
-      throw new QueryException("Error while executing command!", inLHM.get(0));
-    }*/
-    List<HashMap<String, String>> dataList = QueryTools.parseInput(data);
-    if (dataList != null) {
-      inLHM.addAll(dataList);
-    }
-    return new QueryResponse(inLHM);
-  }
-
-  /**
-   *
-   * @param user
-   * @param pass
-   * @return
-   * @throws QueryException
-   */
-  public boolean login(String user, String pass) throws QueryException {
-    QueryResponse qr = this.executeCommand(new QueryCommand("login").noValParam(user, pass));
-    /*List<HashMap<String, String>> response = this.executeCommand("login " + user + " " + pass);
-    if (!isResponseOK(response)) {
-      return false;
-    }*/
-    if(qr.hasError()) {
-      return false;
-    }
-
-    return true;
-  }
-
-  /**
-   *
-   * @return
-   * @throws QueryException
+   * @return @throws QueryException
    */
   public HashMap<String, String> whoAmI() throws QueryException {
-    QueryResponse qr = this.executeCommand(new QueryCommand("whoami"));
-    if(qr.hasError()) {
+    QueryResponse qr = this.qCon.executeCommand(new QueryCommand("whoami"));
+    if (qr.hasError()) {
       return null;
     }
     return qr.getDataResponse().get(0);
@@ -302,41 +132,17 @@ public class QueryInterface {
 
   /**
    *
-   * @param id
-   * @return
-   * @throws QueryException
+   * @return @throws QueryException
    */
-  public boolean selectVirtualserver(int id) throws QueryException {
-    return selectVirtualserver(String.valueOf(id));
-  }
-
-  /**
-   *
-   * @param id
-   * @return
-   * @throws QueryException
-   */
-  public boolean selectVirtualserver(String id) throws QueryException {
-    QueryResponse qr = this.executeCommand(new QueryCommand("use").noValParam(id.toString()));
-    if (qr.hasError()) {
-      return false;
-    }
-    return true;
-  }
-
-  /**
-   *
-   * @return
-   * @throws QueryException
-   */
-  public boolean fillServerList() throws QueryException {
-    QueryResponse qr = this.executeCommand(new QueryCommand("serverlist"));
+  protected boolean fillServerList() throws QueryException {
+    QueryResponse qr = this.qCon.executeCommand(new QueryCommand("serverlist"));
     if (qr.hasError()) {
       return false;
     }
 
     for (HashMap<String, String> server : qr.getDataResponse()) {
-      this.servers.add(new Server(server.get("virtualserver_id"), this));
+      //this.servers.add(new Server(server.get("virtualserver_id"), this));
+      Server s = new Server(server.get("virtualserver_id"), this);
     }
 
     return true;
@@ -355,7 +161,7 @@ public class QueryInterface {
         return s;
       }
     }
-    QueryResponse qr = this.executeCommand(new QueryCommand("serverlist"));
+    QueryResponse qr = this.qCon.executeCommand(new QueryCommand("serverlist"));
     if (!qr.hasError()) {
       for (HashMap<String, String> server : qr.getDataResponse()) {
         if (server.get("virtualserver_id").equals(id.toString())) {

@@ -49,24 +49,16 @@ public class Example2 {
    * @throws QueryException
    */
   public static void main(String[] args) throws QueryException {
-    Example2 ex2 = new Example2();
+    Example2 ex2 = new Example2(args);
     ex2.showMe();
   }
 
-  public Example2() {
-    qi = new QueryInterface();
+  public Example2(String[] args) throws QueryException {
+    qi = new QueryInterface(args[0], Integer.valueOf(args[1]), args[2], args[3], new Listener(qi));
     running = true;
   }
 
   public void showMe() throws QueryException {
-    // connect to the given ip : port
-    qi.connect(ip, port);
-    // register the QueryListener class defined below
-    qi.registerQueryListener(new Listener(qi));
-    // login using given user and passwd
-    qi.login(user, passwd);
-    // populate the internal server list
-    qi.fillServerList();
     // get the first server in the list
     Server s = qi.getServers().get(0);
     // register all available events
@@ -95,8 +87,8 @@ public class Example2 {
        * The library still passes commands and receives the correct replies while
        * the system waits for events on another thread. All events are received.
        */
-      newName = new BigInteger(130, new SecureRandom()).toString(32).substring(0, 8);
-      s.setName(newName);
+      //newName = new BigInteger(130, new SecureRandom()).toString(32).substring(0, 8);
+      //s.setName(newName);
     }
     // reset the server name to what we got before
     s.setName(serverName);
@@ -122,7 +114,7 @@ public class Example2 {
         System.out.println("    " + key + " = " + data.get(key));
       }
       System.out.println("   }");
-      running = false;
+      //running = false;
     }
   }
 }

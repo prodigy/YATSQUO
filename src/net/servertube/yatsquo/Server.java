@@ -20,7 +20,6 @@ package net.servertube.yatsquo;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import net.servertube.yatsquo.Data.EventType;
 
 /**
  *
@@ -85,6 +84,7 @@ public class Server {
     this.queryInterface = queryInterface;
     try {
       this.fillServerInfo();
+      this.registerServer();
     } catch (QueryException ex) {
       System.err.println("Error while filling Server object with data!");
     }
@@ -196,7 +196,7 @@ public class Server {
     if (hostbutton_gfx_url != null) {
       paramInfo.put("virtualserver_hostbutton_gfx_url", hostbutton_gfx_url);
     }
-    QueryResponse qr = queryInterface.executeCommand(new QueryCommand("servercreate", paramInfo));
+    QueryResponse qr = queryInterface.qCon.executeCommand(new QueryCommand("servercreate", paramInfo));
     if (qr.hasError()) {
       throw new QueryException("Error while creating server", qr.getErrorResponse());
     }
@@ -204,6 +204,10 @@ public class Server {
     this.fillServerInfo();
     queryInterface.registerServer(this);
     return true;
+  }
+
+  private void registerServer() {
+    queryInterface.registerServer(this);
   }
 
   /**
@@ -226,8 +230,8 @@ public class Server {
    * @throws QueryException
    */
   protected QueryResponse executeCommand(String command) throws QueryException {
-    queryInterface.selectVirtualserver(ID);
-    return queryInterface.executeCommand(command);
+    queryInterface.qCon.selectVirtualserver(ID);
+    return queryInterface.qCon.executeCommand(command);
   }
 
   /**
@@ -237,8 +241,8 @@ public class Server {
    * @throws QueryException
    */
   protected QueryResponse executeCommand(QueryCommand command) throws QueryException {
-    queryInterface.selectVirtualserver(ID);
-    return queryInterface.executeCommand(command);
+    queryInterface.qCon.selectVirtualserver(ID);
+    return queryInterface.qCon.executeCommand(command);
   }
 
   /**
@@ -286,25 +290,31 @@ public class Server {
 
   /**
    *
-   * @param type
-   * @param params
-   * @return
-   * @throws QueryException
+   * @param client
    */
-  public boolean registerEvent(EventType type, HashMap<String, Object> params) throws QueryException {
-    return this.queryInterface.queryListener.registerEvent(type, params);
+  protected void registerClient(Client client) {
+    for (Client c : this.clients) {
+      if(c.getClientID() == client.getClientID()) {
+        client = null;
+        return;
+      }
+    }
+    this.clients.add(client);
   }
 
   /**
    *
-   * @param type
-   * @return
-   * @throws QueryException
+   * @param client
    */
-  public boolean unregisterEvent(EventType type) throws QueryException {
-    return this.queryInterface.queryListener.unregisterEvent(type);
+  protected void unregisterClient(Client client) {
+    this.clients.remove(client);
+    client = null;
   }
 
+  /**
+   *
+   * @throws QueryException
+   */
   private void fillServerInfo() throws QueryException {
     QueryResponse qr = this.executeCommand(new QueryCommand("serverinfo"));
     if (qr.hasError()) {
@@ -334,8 +344,14 @@ public class Server {
     this.welcomemessage = info.get("virtualserver_welcomemessage");
 
     this.getChannelInfo();
+    this.getClientInfo();
   }
 
+  /**
+   *
+   * @return
+   * @throws QueryException
+   */
   private boolean getChannelInfo() throws QueryException {
     QueryResponse qr = this.executeCommand(new QueryCommand("channellist"));
     if (qr.hasError()) {
@@ -343,7 +359,24 @@ public class Server {
     }
 
     for (HashMap<String, String> channel : qr.getDataResponse()) {
-      this.channels.add(new Channel(channel.get("cid"), this));
+      /*
+       * Removed because creating a new Channel object automatically registers
+       * the channel to the Server channels list.
+       * this.channels.add(new Channel(channel.get("cid"), this));
+       */
+      Channel c = new Channel(channel.get("cid"), this);
+    }
+    return true;
+  }
+
+  private boolean getClientInfo() throws QueryException {
+    QueryResponse qr = this.executeCommand(new QueryCommand("clientlist"));
+    if (qr.hasError()) {
+      return false;
+    }
+
+    for (HashMap<String, String> client : qr.getDataResponse()) {
+      Client c = new Client(client.get("clid"), this);
     }
     return true;
   }
@@ -833,6 +866,28 @@ public class Server {
     for (Channel channel : this.channels) {
       if (channel.getID() == id) {
         return channel;
+      }
+    }
+    return null;
+  }
+
+  /**
+   *
+   * @return
+   */
+  public List<Client> getClients() {
+    return this.clients;
+  }
+
+  /**
+   *
+   * @param id
+   * @return
+   */
+  public Client getClientByID(int id) {
+    for (Client client : this.clients) {
+      if (client.getClientID()== id) {
+        return client;
       }
     }
     return null;

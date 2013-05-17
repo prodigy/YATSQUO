@@ -80,6 +80,16 @@ public class Client {
   public Client(Integer ID, Server server) {
     this.server = server;
     this.client_id = ID;
+    try {
+      this.fillClientInfo();
+      this.registerClient();
+    } catch (QueryException ex) {
+      System.err.println("Error while filling Channel object with data!");
+    }
+  }
+
+  public Client(String ID, Server server) {
+    this(Integer.parseInt(ID), server);
   }
 
   private void fillClientInfo() throws QueryException {
@@ -94,7 +104,8 @@ public class Client {
     this.database_id = Integer.valueOf(info.get("client_database_id"));
     this.uuid = info.get("client_unique_identifier");
     this.nickname = info.get("client_nickname");
-    this.nickname_phonetic = info.get("client_nickname_phonetic");    this.version = info.get("client_version");
+    this.nickname_phonetic = info.get("client_nickname_phonetic");
+    this.version = info.get("client_version");
     this.platform = info.get("client_platform");
     this.default_channel = info.get("client_default_channel");
     this.away = Boolean.parseBoolean(info.get("client_away"));
@@ -107,7 +118,7 @@ public class Client {
     this.login_name = info.get("client_login_name");
     this.created = Long.valueOf(info.get("client_created"));
     this.lastconnected = Long.valueOf(info.get("client_lastconnected"));
-    this.totalConnections = Integer.valueOf(info.get("client_totalConnections"));
+    this.totalConnections = Integer.valueOf(info.get("client_totalconnections"));
     this.type = Integer.valueOf(info.get("client_type"));
     this.talk_power = Integer.valueOf(info.get("client_talk_power"));
     this.is_talker = Boolean.parseBoolean(info.get("client_is_talker"));
@@ -124,18 +135,25 @@ public class Client {
     this.is_channel_commander = Boolean.parseBoolean(info.get("client_is_channel_commander"));
     this.icon_id = Integer.valueOf(info.get("client_icon_id"));
     this.base64HashClientUID = info.get("client_base64HashClientUID");
-    this.filetransfer_bandwidth_sent = Long.valueOf(info.get("client_filetransfer_bandwidth_sent"));
-    this.filetransfer_bandwidth_received = Long.valueOf(info.get("client_filetransfer_bandwidth_received"));
-    this.packets_sent_total = Long.valueOf(info.get("client_packets_sent_total"));
-    this.bytes_sent_total = Long.valueOf(info.get("client_bytes_sent_total"));
-    this.packets_received_total = Long.valueOf(info.get("client_packets_received_total"));
-    this.bytes_received_total = Long.valueOf(info.get("client_bytes_received_total"));
-    this.bandwidth_sent_last_second_total = Long.valueOf(info.get("client_bandwidth_sent_last_second_total"));
-    this.bandwidth_sent_last_minute_total = Long.valueOf(info.get("client_bandwidth_sent_last_minute_total"));
-    this.bandwidth_received_last_second_total = Long.valueOf(info.get("client_bandwidth_received_last_second_total"));
-    this.bandwidth_received_last_minute_total = Long.valueOf(info.get("client_bandwidth_received_last_minute_total"));
-    this.connected_time = Long.valueOf(info.get("client_connected_time"));
-    this.client_ip = info.get("client_client_ip");
+    this.filetransfer_bandwidth_sent = Long.valueOf(info.get("connection_filetransfer_bandwidth_sent"));
+    this.filetransfer_bandwidth_received = Long.valueOf(info.get("connection_filetransfer_bandwidth_received"));
+    this.packets_sent_total = Long.valueOf(info.get("connection_packets_sent_total"));
+    this.bytes_sent_total = Long.valueOf(info.get("connection_bytes_sent_total"));
+    this.packets_received_total = Long.valueOf(info.get("connection_packets_received_total"));
+    this.bytes_received_total = Long.valueOf(info.get("connection_bytes_received_total"));
+    this.bandwidth_sent_last_second_total = Long.valueOf(info.get("connection_bandwidth_sent_last_second_total"));
+    this.bandwidth_sent_last_minute_total = Long.valueOf(info.get("connection_bandwidth_sent_last_minute_total"));
+    this.bandwidth_received_last_second_total = Long.valueOf(info.get("connection_bandwidth_received_last_second_total"));
+    this.bandwidth_received_last_minute_total = Long.valueOf(info.get("connection_bandwidth_received_last_minute_total"));
+    this.connected_time = Long.valueOf(info.get("connection_connected_time"));
+    this.client_ip = info.get("connection_client_ip");
   }
 
+  private void registerClient() {
+    server.registerClient(this);
+  }
+
+  public Integer getClientID() {
+    return client_id;
+  }
 }

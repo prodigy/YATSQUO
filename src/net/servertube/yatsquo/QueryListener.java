@@ -29,6 +29,7 @@ import java.util.TimerTask;
 
 /**
  * Class needed in order to receive events raised by the TS3 Server
+ *
  * @author Sebastian Grunow
  * @since 0.1a
  */
@@ -36,34 +37,19 @@ public abstract class QueryListener {
 
   private List<EventType> events = new ArrayList<EventType>();
   private QueryInterface qi = null;
-  private boolean listen = false;
   private BufferedReader in = null;
   private Timer eventTimer = null;
   private TimerTask eventTimerTask = null;
+  private Integer serverID = null;
+  private QueryConnection qCon = null;
 
   /**
    *
    * @param qi
    */
-  public QueryListener(QueryInterface qi) {
-    this.qi = qi;
-    this.in = qi.getInStream();
-    this.registerQueryListener();
-  }
-
-  /**
-   *
-   */
-  protected final void registerQueryListener() {
-    //this.qi.registerQueryListener(this);
-  }
-
-  /**
-   *
-   * @param on
-   */
-  public void setEventListenerStatus(boolean on) {
-    this.listen = on;
+  public QueryListener(String ip, Integer port, String user, String pass, Integer serverID) throws QueryException {
+    qCon = new QueryConnection(ip, port, user, pass);
+    qCon.selectVirtualserver(serverID);
   }
 
   /**
@@ -71,14 +57,18 @@ public abstract class QueryListener {
    * @param clearRegisteredEvents
    */
   public void disableEventListener(boolean clearRegisteredEvents) {
-    eventTimer.cancel();
+    if (eventTimer != null) {
+      eventTimer.cancel();
+      eventTimer.purge();
+    }
     eventTimer = null;
-    eventTimerTask.cancel();
+    if (eventTimerTask != null) {
+      eventTimerTask.cancel();
+    }
     eventTimerTask = null;
     if (clearRegisteredEvents == true) {
       events.clear();
     }
-    this.setEventListenerStatus(false);
   }
 
   /**
@@ -96,7 +86,10 @@ public abstract class QueryListener {
   }
 
   /**
-   * Executes the event raised giving the event type and data
+   * Executes the event raised giving the event type and data<br />
+   * Override this function and create the QueryInterface<br />
+   * with your own QueryListener as parameter.
+   *
    * @param type
    * @param data
    */
@@ -171,7 +164,7 @@ public abstract class QueryListener {
           }
         }
       }
-      QueryResponse qr = this.qi.executeCommand(new QueryCommand("servernotifyregister", paramsFinal));
+      QueryResponse qr = this.qCon.executeCommand(new QueryCommand("servernotifyregister", paramsFinal));
       if (!qr.hasError()) {
         events.add(type);
         return true;
@@ -197,19 +190,20 @@ public abstract class QueryListener {
    *
    */
   public synchronized void eventCheck() {
-    if (this.listen) {
-      try {
-        if (this.in.ready()) {
-          String inLine = in.readLine();
-          if (!inLine.isEmpty()) {
-            CommunicationLog.log(inLine, false);
-            this.handleEvent(inLine);
-          }
+    try {
+      if (this.in.ready()) {
+        String inLine = in.readLine();
+        if (!inLine.isEmpty()) {
+          CommunicationLog.log(inLine, false);
+          this.handleEvent(inLine);
         }
-      } catch (IOException ex) {
-        System.err.println("QueryListener: Error reading line from input stream");
-        ex.printStackTrace();
       }
+    } catch (IOException ex) {
+      System.err.println("QueryListener: Error reading line from input stream");
+      ex.printStackTrace();
+    } catch (Exception ex) {
+      System.err.println("QueryListener: Error while reading line from input stream");
+      ex.printStackTrace();
     }
     try {
       this.wait(100);

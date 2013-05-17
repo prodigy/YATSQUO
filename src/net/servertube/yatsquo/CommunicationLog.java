@@ -22,7 +22,9 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,6 +35,18 @@ import java.util.logging.Logger;
 public class CommunicationLog {
   private static PrintStream cLogOut;
   private static SimpleDateFormat dateFormat;
+  /**
+   * An internal Throwable used to determine the source stack.
+   *
+   * @since 08.09.2012
+   */
+  private static Throwable source = null;
+  /**
+   * A list of the current source stack.
+   *
+   * @since 08.09.2012
+   */
+  private static ArrayList<HashMap<String, String>> sourceStack = null;
 
   /**
    *
@@ -67,7 +81,7 @@ public class CommunicationLog {
    * @param msg
    * @param outbound
    */
-  public static void log(String msg, boolean outbound) {
+  public static synchronized void log(String msg, boolean outbound) {
     if(cLogOut == null) {
       CommunicationLog.openLog("comm.log");
     }
@@ -75,7 +89,49 @@ public class CommunicationLog {
       CommunicationLog.setupDateFormat(null);
     }
     Date now = Calendar.getInstance().getTime();
-    cLogOut.println(dateFormat.format(now) + " :: " + (outbound?"> ":"< ") + msg);
+    CommunicationLog.fillSourceStack();
+    cLogOut.println(dateFormat.format(now) + " :: " + sourceStack.get(0).get("class") + " " + (outbound?"> ":"< ") + msg);
     //System.out.println(dateFormat.format(now) + " :: " + (outbound?"> ":"< ") + msg);
+  }
+
+  /**
+   * Fills the sourceStack with the relevant information.<br /> This data can be
+   * displayed when the message is displayed.
+   *
+   * @since 08.09.2012
+   */
+  private static void fillSourceStack() {
+    source = new Throwable();
+    source.fillInStackTrace();
+    ArrayList<HashMap<String, String>> stack = new ArrayList<HashMap<String, String>>();
+    int x = 0;
+    for (StackTraceElement elem : source.getStackTrace()) {
+      if (elem.getClassName().equals(source.getStackTrace()[0].getClassName())) {
+        continue; // skip the logging class in the stack trace
+      }
+      ++x;
+      HashMap<String, String> data = new HashMap<String, String>();
+      data.put("class", elem.getClassName());
+      data.put("method", elem.getMethodName());
+      data.put("file", elem.getFileName());
+      data.put("line", String.valueOf(elem.getLineNumber()));
+      stack.add(data);
+    }
+    /*
+     * The same block again if we are still at x = 0
+     * This block is only executed if the exception originates from the Logger class!
+     */
+    if (x == 0) {
+      for (StackTraceElement elem : source.getStackTrace()) {
+        ++x;
+        HashMap<String, String> data = new HashMap<String, String>();
+        data.put("class", elem.getClassName());
+        data.put("method", elem.getMethodName());
+        data.put("file", elem.getFileName());
+        data.put("line", String.valueOf(elem.getLineNumber()));
+        stack.add(data);
+      }
+    }
+    sourceStack = stack;
   }
 }
