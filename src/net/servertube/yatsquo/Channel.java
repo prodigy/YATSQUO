@@ -57,9 +57,8 @@ public class Channel {
   private Integer icon_id;
 
   /**
-   * When initializing a new Channel object with this constructor the library<br
-   * />
-   * will fetch all necessary data from the query port.<br />
+   * When initializing a new Channel object with this constructor the library
+   * <br />will fetch all necessary data from the query port.<br />
    * <strong>Requires the given Channel ID to be existent</strong>
    *
    * @param ID The channel ID to get the infor for
@@ -151,9 +150,8 @@ public class Channel {
   }
 
   /**
-   * After initializing a new Channel object call this function to actually<br
-   * />
-   * create the channel in the server it is assigned to.<br />
+   * After initializing a new Channel object call this function to actually
+   * <br />create the channel in the server it is assigned to.<br />
    * <strong>Will only function when the channel has no ID set!<br />
    * That means when the channel is not already registered!</strong>
    *

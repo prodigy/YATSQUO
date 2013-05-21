@@ -61,7 +61,14 @@ public abstract class QueryListener implements QueryEventExecutioner {
   public QueryListener(String ip, Integer port, String user, String pass, Integer serverID) throws QueryException {
     this.events = new ArrayList<EventType>();
     this.qCon = new QueryConnection(ip, port, user, pass);
+    this.in = this.qCon.getInStream();
     this.qCon.selectVirtualserver(serverID);
+  }
+
+  public QueryListener(QueryInterface queryInterface, Integer serverID) throws QueryException {
+    this(queryInterface.qCon.getIp(), queryInterface.qCon.getPort(),
+            queryInterface.qCon.getUser(), queryInterface.qCon.getPass(),
+            serverID);
   }
 
   /**
@@ -104,28 +111,19 @@ public abstract class QueryListener implements QueryEventExecutioner {
    * @return
    * @throws QueryException
    */
-  public boolean handleEvent(String line) throws QueryException {
+  private boolean handleEvent(String line) throws QueryException {
     if (line.startsWith("notify")) {
-      System.out.println("received notify: " + line);
       StringTokenizer tkn = new StringTokenizer(line, " ");
       if (tkn.countTokens() > 1) {
         String eventType = tkn.nextToken();
         String subType = tkn.nextToken();
-        System.out.println("Event type received: " + eventType + "; subType: " + subType);
         EventType event = EventType.getTypeBySubType(subType);
         if (event == null) {
           event = EventType.getTypeByEventID(eventType);
         }
         if (event == null) {
           throw new QueryException(ErrorCodes.EVENT_UNKNOWN, eventType.toString());
-        } else {
-          System.out.println("Event type assigned: " + event.toString());
         }
-        System.out.print("Events registered: ");
-        for (EventType et : events) {
-          System.out.print(et.toString() + ", ");
-        }
-        System.out.println();
         boolean isHandled = false;
         if (event != null) {
           for (EventType _event : events) {
@@ -137,8 +135,6 @@ public abstract class QueryListener implements QueryEventExecutioner {
         }
         if (isHandled) {
           executeEvent(event, QueryTools._parseInput(line.substring(line.indexOf(" ") + 1)));
-        } else {
-          System.out.println("Event not passed to executeEvent()! Event: " + eventType);
         }
       }
       return true;
@@ -154,7 +150,7 @@ public abstract class QueryListener implements QueryEventExecutioner {
    * @return success
    * @throws QueryException
    */
-  protected final boolean registerEvent(EventType type, HashMap<String, Object> params) throws QueryException {
+  public final boolean registerEvent(EventType type, HashMap<String, Object> params) throws QueryException {
     if (!events.contains(type)) {
       List<String> paramList = type.getParameters();
       HashMap<String, Object> paramsFinal = new HashMap<String, Object>();
@@ -196,7 +192,7 @@ public abstract class QueryListener implements QueryEventExecutioner {
    *
    * @throws QueryException
    */
-  public synchronized void eventCheck() throws QueryException {
+  private synchronized void eventCheck() throws QueryException {
     try {
       if (this.in.ready()) {
         String inLine = in.readLine();

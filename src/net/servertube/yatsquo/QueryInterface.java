@@ -29,10 +29,6 @@ import java.util.HashMap;
  */
 public class QueryInterface {
 
-  private String ip = null;
-  private Integer port = null;
-  private String user = null;
-  private String pass = null;
   private List<Server> servers = new ArrayList<Server>();
   /**
    * currently selected server ID
@@ -68,7 +64,8 @@ public class QueryInterface {
   }
 
   /**
-   * Initializes the QueryInterface object, moved out of constructor in case<br />
+   * Initializes the QueryInterface object, moved out of constructor in case<br
+   * />
    * constructor is overriden
    *
    * @param ip
@@ -112,7 +109,8 @@ public class QueryInterface {
   /**
    * returns a query response with who i am
    *
-   * @return @throws QueryException
+   * @return
+   * @throws QueryException
    */
   public HashMap<String, String> whoAmI() throws QueryException {
     QueryResponse qr = this.qCon.executeCommand(new QueryCommand("whoami"));
@@ -125,7 +123,8 @@ public class QueryInterface {
   /**
    * fills in the server list
    *
-   * @return @throws QueryException
+   * @return
+   * @throws QueryException
    */
   protected boolean fillServerList() throws QueryException {
     QueryResponse qr = this.qCon.executeCommand(new QueryCommand("serverlist"));
@@ -150,7 +149,6 @@ public class QueryInterface {
   public Server getServerByID(Integer id) throws QueryException {
     for (Server s : servers) {
       if (s.getID() == id) {
-        System.out.println("got server from internal list");
         return s;
       }
     }
@@ -159,8 +157,6 @@ public class QueryInterface {
       for (HashMap<String, String> server : qr.getDataResponse()) {
         if (server.get("virtualserver_id").equals(id.toString())) {
           Server s = new Server(server.get("virtualserver_id"), this);
-          servers.add(s);
-          System.out.println("fetched data from query port");
           return s;
         }
       }
@@ -178,7 +174,6 @@ public class QueryInterface {
   public Server getServerByPort(int port) throws QueryException {
     for (Server s : servers) {
       if (s.getPort() == port) {
-        System.out.println("got server from internal list");
         return s;
       }
     }
@@ -187,7 +182,6 @@ public class QueryInterface {
       for (HashMap<String, String> server : qr.getDataResponse()) {
         if (server.get("server_id") != null) {
           Server s = new Server(server.get("server_id"), this);
-          System.out.println("fetched data from query port");
           return s;
         }
       }

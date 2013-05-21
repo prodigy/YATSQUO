@@ -227,7 +227,7 @@ public class QueryException extends Throwable {
     if(queryError != null) {
       out += this.queryError.toString() + "\n";
     }
-    if(this.getMessage() != null && !this.getMessage().isEmpty()) {
+    if(super.getMessage() != null && !super.getMessage().isEmpty()) {
       out += "Message: " + super.getMessage();
     }
     return out;

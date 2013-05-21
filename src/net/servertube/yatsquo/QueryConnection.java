@@ -307,4 +307,20 @@ public class QueryConnection {
   public boolean selectVirtualserver(String id) throws QueryException {
     return selectVirtualserver(Integer.valueOf(id));
   }
+
+  protected String getIp() {
+    return ip;
+  }
+
+  protected Integer getPort() {
+    return port;
+  }
+
+  protected String getUser() {
+    return user;
+  }
+
+  protected String getPass() {
+    return pass;
+  }
 }

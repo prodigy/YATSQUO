@@ -37,49 +37,61 @@ public enum EventType {
    */
   CLIENT_LEFTVIEW("notifyclientleftview", null, null),
   /**
-   * Used to register the notifycliententerview event, possible paramter is<br
-   * />
+   * Returned when a notifytextmessage event occurs.
+   */
+  EVENT_TEXTMESSAGE("notifytextmessage", null, null),
+  /**
+   * Returned when a notifyclientmoved event occurs.
+   */
+  EVENT_CLIENT_MOVED("notifyclientmoved", null, null),
+  /**
+   * Used to register the notifycliententerview event, possible paramter is
    * event.
    */
-  EVENT_SERVER("notifycliententerview", "server", new ArrayList<String>() {
+  REGISTER_ENTER_VIEW("notifycliententerview", "server", new ArrayList<String>() {
     {
       add("event");
     }
   }),
   /**
-   * Used to register notifyclientmoved events, possible parameters are<br />
+   * Used to register the notifycliententerview event, possible paramter is
+   * event.
+   */
+  REGISTER_LEFT_VIEW("notifyclientleftview", "server", new ArrayList<String>() {
+    {
+      add("event");
+    }
+  }),
+  /**
+   * Used to register notifyclientmoved events, possible parameters are
    * event and id.
    */
-  CLIENT_MOVED("notifyclientmoved", "channel", new ArrayList<String>() {
+  REGISTER_CLIENT_MOVED("notifyclientmoved", "channel", new ArrayList<String>() {
     {
       add("event");
       add("id");
     }
   }),
   /**
-   * Returned when a notifytextmessage event occurs.
+   * Used to register text message events (server wide)
    */
-  EVENT_TEXTMESSAGE("notifytextmessage", null, null),
-  /**
-   * Used to register
-   */
-  TEXT_SERVER("notifytextmessage", "textserver", new ArrayList<String>() {
+  REGISTER_TEXT_SERVER("notifytextmessage", "textserver", new ArrayList<String>() {
     {
       add("event");
     }
   }),
   /**
-   *
+   * Used to register text message events (channel wide)
    */
-  TEXT_CHANNEL("notifytextmessage", "textchannel", new ArrayList<String>() {
+  REGISTER_TEXT_CHANNEL("notifytextmessage", "textchannel", new ArrayList<String>() {
     {
       add("event");
     }
   }),
   /**
-   *
+   * Used to register text message events (private)
    */
-  TEXT_PRIVATE("notifytextmessage", "textprivate", new ArrayList<String>() {
+  REGISTER_TEXT_PRIVATE("notifytextmessage", "textprivate", new ArrayList<String>() {
     {
       add("event");
     }

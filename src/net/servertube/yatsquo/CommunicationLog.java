@@ -87,7 +87,6 @@ public class CommunicationLog {
     Date now = Calendar.getInstance().getTime();
     CommunicationLog.fillSourceStack();
     cLogOut.println(dateFormat.format(now) + " :: " + sourceStack.get(0).get("class") + " " + (outbound?"> ":"< ") + msg);
-    //System.out.println(dateFormat.format(now) + " :: " + (outbound?"> ":"< ") + msg);
   }
 
   /**

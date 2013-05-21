@@ -23,14 +23,14 @@ import net.servertube.yatsquo.QueryInterface;
 import net.servertube.yatsquo.Server;
 
 /**
- * QueryInterface - Example1<br />
+ * QueryInterface - ListingExample<br />
  * <br />
  * Establishing a connection and priting out every Server with<br />
  * its Channels and Subchannels (not-sorted).
  *
  * @author Sebastian "prodigy" G.
  */
-public class Example1 {
+public class ListingExample {
 
   /**
    * @see Example1
@@ -39,7 +39,7 @@ public class Example1 {
    */
   public static void main(String[] args) throws QueryException {
     if (args.length < 4) {
-      System.err.println("Usage: java -cp YATSQUO.jar net.servertube.yatsquo.examples.Example1 IP PORT USER PASSWORD");
+      System.err.println("Usage: java -cp YATSQUO.jar net.servertube.yatsquo.examples.ListingExample IP PORT USER PASSWORD");
       return;
     }
     try {
@@ -54,7 +54,7 @@ public class Example1 {
         }
       }
     } catch (QueryException ex) {
-      System.err.println("Usage: java -cp YATSQUO.jar net.servertube.yatsquo.examples.Example1 IP PORT USER PASSWORD");
+      System.err.println("Usage: java -cp YATSQUO.jar net.servertube.yatsquo.examples.ListingExample IP PORT USER PASSWORD");
       System.err.println("");
       System.err.println(ex.getMessage());
     }
