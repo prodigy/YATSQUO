@@ -23,9 +23,11 @@ test a bit. I wrote some example applications, too.
 - +      Sending commands
 - +      Receiving answer and stuffing everything in a QueryResponse class
 - +      Communication logging
+- +      Event Listener
+- +      Error handling
 - o      Server management (nearly done)
 - o      Channel management (nearly done)
-- -      Client management
+- o      Client management
 - -      Permission management
 - -      Everything else I didn't know it's missing
 
