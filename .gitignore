@@ -9,6 +9,15 @@ example2.bat
 dist/javadoc/
 
 #################
+## NetBeans
+#################
+
+nbproject/
+build.xml
+manifest.mf
+build/
+
+#################
 ## Subversion
 #################
 
