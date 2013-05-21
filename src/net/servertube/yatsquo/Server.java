@@ -1,6 +1,8 @@
 /*
  * Copyright (C) 2013 Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>.
  *
+ * Server.java - 2012-08-29
+ *
  * YATSQUO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 3 of
@@ -20,15 +22,17 @@ package net.servertube.yatsquo;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import net.servertube.yatsquo.Data.ErrorCodes;
 
 /**
  *
- * @author Sebastian "prodigy" G.
+ * @author Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>
  */
 public class Server {
 
   /**
-   * This has to be an <strong>existing, already connected</strong> queryInterface!<br />
+   * This has to be an <strong>existing, already connected</strong>
+   * queryInterface!<br />
    * Usually set in the constructor!
    */
   protected QueryInterface queryInterface;
@@ -79,15 +83,11 @@ public class Server {
    * @param ID
    * @param queryInterface
    */
-  public Server(int ID, QueryInterface queryInterface) {
+  public Server(int ID, QueryInterface queryInterface) throws QueryException {
     this.ID = ID;
     this.queryInterface = queryInterface;
-    try {
-      this.fillServerInfo();
-      this.registerServer();
-    } catch (QueryException ex) {
-      System.err.println("Error while filling Server object with data!");
-    }
+    this.fillServerInfo();
+    this.registerServer();
   }
 
   /**
@@ -95,7 +95,7 @@ public class Server {
    * @param ID
    * @param queryInterface
    */
-  public Server(String ID, QueryInterface queryInterface) {
+  public Server(String ID, QueryInterface queryInterface) throws QueryException {
     this(Integer.parseInt(ID), queryInterface);
   }
 
@@ -124,7 +124,7 @@ public class Server {
           String machine_id, String hostbanner_url, String hostbanner_gfx_url, Integer hostbanner_gfx_interval,
           String hostbutton_url, String hostbutton_gfx_url) throws QueryException {
     if (queryInterface == null || name == null) {
-      throw new QueryException("Cannot create a server without queryInterface or name");
+      throw new QueryException(ErrorCodes.SERVER_MISSING_PARAMETER);
     }
     this.port = port;
     this.maxclients = maxclients;
@@ -146,8 +146,7 @@ public class Server {
 
   /**
    *
-   * @return
-   * @throws QueryException
+   * @return @throws QueryException
    */
   public boolean createAndRegister() throws QueryException {
     HashMap<String, Object> paramInfo = new HashMap<String, Object>();
@@ -198,7 +197,7 @@ public class Server {
     }
     QueryResponse qr = queryInterface.qCon.executeCommand(new QueryCommand("servercreate", paramInfo));
     if (qr.hasError()) {
-      throw new QueryException("Error while creating server", qr.getErrorResponse());
+      throw new QueryException(ErrorCodes.SERVER_CREATE_ERROR, qr.getErrorResponse());
     }
     this.setID(Integer.valueOf(qr.getDataResponse().get(0).get("sid")));
     this.fillServerInfo();
@@ -212,15 +211,14 @@ public class Server {
 
   /**
    *
-   * @return
-   * @throws QueryException
+   * @return @throws QueryException
    */
   public boolean delete() throws QueryException {
     QueryResponse qr = this.executeCommand(new QueryCommand("serverdelete").param("sid", this.getID()));
     if (!qr.hasError()) {
       return true;
     }
-    throw new QueryException("Error while deleting server", qr.getErrorResponse());
+    throw new QueryException(ErrorCodes.SERVER_DELETE_ERROR, qr.getErrorResponse());
   }
 
   /**
@@ -294,7 +292,7 @@ public class Server {
    */
   protected void registerClient(Client client) {
     for (Client c : this.clients) {
-      if(c.getClientID() == client.getClientID()) {
+      if (c.getClientID() == client.getClientID()) {
         client = null;
         return;
       }
@@ -318,7 +316,7 @@ public class Server {
   private void fillServerInfo() throws QueryException {
     QueryResponse qr = this.executeCommand(new QueryCommand("serverinfo"));
     if (qr.hasError()) {
-      throw new QueryException("Error while retrieving serverinfo for ID " + ID + "!");
+      throw new QueryException(ErrorCodes.SERVER_GET_INFO_FAILED, "ID: " + this.ID);
     }
 
     HashMap<String, String> info = qr.getDataResponse().get(0);
@@ -349,8 +347,7 @@ public class Server {
 
   /**
    *
-   * @return
-   * @throws QueryException
+   * @return @throws QueryException
    */
   private boolean getChannelInfo() throws QueryException {
     QueryResponse qr = this.executeCommand(new QueryCommand("channellist"));
@@ -817,8 +814,7 @@ public class Server {
 
   /**
    *
-   * @return
-   * @throws QueryException
+   * @return @throws QueryException
    */
   public boolean start() throws QueryException {
     if (this.online == true) {
@@ -834,8 +830,7 @@ public class Server {
 
   /**
    *
-   * @return
-   * @throws QueryException
+   * @return @throws QueryException
    */
   public boolean stop() throws QueryException {
     if (this.online == false) {
@@ -886,7 +881,7 @@ public class Server {
    */
   public Client getClientByID(int id) {
     for (Client client : this.clients) {
-      if (client.getClientID()== id) {
+      if (client.getClientID() == id) {
         return client;
       }
     }
@@ -895,8 +890,7 @@ public class Server {
 
   /**
    *
-   * @return
-   * @throws QueryException
+   * @return @throws QueryException
    */
   public HashMap<String, String> getConnectionInfo() throws QueryException {
     QueryResponse qr = this.executeCommand(new QueryCommand("serverrequestconnectioninfo"));
@@ -933,5 +927,5 @@ public class Server {
 
   /*public DBClient getClientFromDBbyPattern(String pattern) {
 
-  }*/
+   }*/
 }

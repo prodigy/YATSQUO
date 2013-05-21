@@ -1,6 +1,8 @@
 /*
  * Copyright (C) 2013 Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>.
  *
+ * QueryInterface.java - 2012-08-29
+ *
  * YATSQUO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 3 of
@@ -23,69 +25,51 @@ import java.util.HashMap;
 
 /**
  *
- * @author Sebastian "prodigy" G.
+ * @author Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>
  */
 public class QueryInterface {
 
-  /**
-   *
-   */
   private String ip = null;
-  /**
-   *
-   */
   private Integer port = null;
-  /**
-   *
-   */
   private String user = null;
-  /**
-   *
-   */
   private String pass = null;
+  private List<Server> servers = new ArrayList<Server>();
   /**
-   *
-   */
-  public QueryConnection qCon = null;
-  /**
-   *
+   * currently selected server ID
    */
   protected int serverID = -1;
   /**
-   *
+   * channel the query client is in
    */
   protected int channelID = -1;
   /**
-   *
+   * the query clients ID
    */
   protected int clientID = -1;
   /**
-   *
-   */
-  private List<Server> servers = new ArrayList<Server>();
-  /**
-   *
+   * registered query listeners
    */
   protected List<QueryListener> listeners;
-
   /**
-   *
+   * The query connection
    */
-  public QueryInterface() {
-  }
+  public QueryConnection qCon = null;
 
   /**
+   * Creates a new QueryInterface object with given parameters.
    *
-   * @param ip
-   * @param port
-   * @param user
-   * @param passwd
+   * @param ip IP of the query port
+   * @param port Port of the query port
+   * @param user username to login with
+   * @param passwd password to login with
    */
   public QueryInterface(String ip, int port, String user, String passwd) throws QueryException {
     initialize(ip, port, user, passwd);
   }
 
   /**
+   * Initializes the QueryInterface object, moved out of constructor in case<br />
+   * constructor is overriden
    *
    * @param ip
    * @param port
@@ -99,6 +83,7 @@ public class QueryInterface {
   }
 
   /**
+   * registers a new query listener.
    *
    * @param ql
    */
@@ -106,11 +91,17 @@ public class QueryInterface {
     listeners.add(ql);
   }
 
+  /**
+   * unregisters a registered query listener
+   *
+   * @param ql
+   */
   public void unregisterQueryListener(QueryListener ql) {
     listeners.remove(ql);
   }
 
   /**
+   * gets a list of all registered query listeners
    *
    * @return
    */
@@ -119,6 +110,7 @@ public class QueryInterface {
   }
 
   /**
+   * returns a query response with who i am
    *
    * @return @throws QueryException
    */
@@ -131,6 +123,7 @@ public class QueryInterface {
   }
 
   /**
+   * fills in the server list
    *
    * @return @throws QueryException
    */
@@ -141,7 +134,6 @@ public class QueryInterface {
     }
 
     for (HashMap<String, String> server : qr.getDataResponse()) {
-      //this.servers.add(new Server(server.get("virtualserver_id"), this));
       Server s = new Server(server.get("virtualserver_id"), this);
     }
 
@@ -149,6 +141,7 @@ public class QueryInterface {
   }
 
   /**
+   * returns a server object by given id
    *
    * @param id
    * @return
@@ -176,6 +169,34 @@ public class QueryInterface {
   }
 
   /**
+   * returns a server object by given port
+   *
+   * @param port
+   * @return
+   * @throws QueryException
+   */
+  public Server getServerByPort(int port) throws QueryException {
+    for (Server s : servers) {
+      if (s.getPort() == port) {
+        System.out.println("got server from internal list");
+        return s;
+      }
+    }
+    QueryResponse qr = this.qCon.executeCommand(new QueryCommand("serveridgetbyport").param("virtualserver_port", port));
+    if (!qr.hasError()) {
+      for (HashMap<String, String> server : qr.getDataResponse()) {
+        if (server.get("server_id") != null) {
+          Server s = new Server(server.get("server_id"), this);
+          System.out.println("fetched data from query port");
+          return s;
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
+   * gets a list of all registered servers
    *
    * @return
    */
@@ -184,6 +205,7 @@ public class QueryInterface {
   }
 
   /**
+   * registers a server to the list
    *
    * @param server
    */

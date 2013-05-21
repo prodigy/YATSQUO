@@ -19,7 +19,7 @@ package net.servertube.yatsquo.Data;
 
 /**
  *
- * @author Basti
+ * @author Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>
  */
 public enum Codec {
 
@@ -38,7 +38,15 @@ public enum Codec {
   /**
    *
    */
-  SPEEX_CELT_MONO(3, "CELT Mono (48 kHz)");
+  SPEEX_CELT_MONO(3, "CELT Mono (48 kHz)"),
+  /**
+   * ID is guessed
+   */
+  OPUS_VOICE(4, "Opus Voice"),
+  /**
+   * ID is guessed
+   */
+  OPUS_MUSIC(5, "Opus Music");
 
   private final int id;
   private final String name;

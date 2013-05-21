@@ -1,6 +1,8 @@
 /*
  * Copyright (C) 2013 Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>.
  *
+ * EventType.java - 2012-08-29
+ *
  * YATSQUO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 3 of
@@ -22,70 +24,77 @@ import java.util.List;
 
 /**
  *
- * @author Basti
+ * @author Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>
  */
 public enum EventType {
 
   /**
-   *
+   * Returned if a client enters the view
    */
   CLIENT_ENTERVIEW("notifycliententerview", null, null),
   /**
-   *
+   * Returned if a client leaves the view
    */
   CLIENT_LEFTVIEW("notifyclientleftview", null, null),
   /**
-   *
+   * Used to register the notifycliententerview event, possible paramter is<br
+   * />
+   * event.
    */
   EVENT_SERVER("notifycliententerview", "server", new ArrayList<String>() {
-
-{
-add("event");
-}
-}),
+    {
+      add("event");
+    }
+  }),
   /**
-   *
+   * Used to register notifyclientmoved events, possible parameters are<br />
+   * event and id.
    */
   CLIENT_MOVED("notifyclientmoved", "channel", new ArrayList<String>() {
-
-{
-add("event");
-add("id");
-}
-}),
+    {
+      add("event");
+      add("id");
+    }
+  }),
   /**
-   *
+   * Returned when a notifytextmessage event occurs.
    */
   EVENT_TEXTMESSAGE("notifytextmessage", null, null),
   /**
-   *
+   * Used to register
    */
   TEXT_SERVER("notifytextmessage", "textserver", new ArrayList<String>() {
-
-{
-add("event");
-}
-}),
+    {
+      add("event");
+    }
+  }),
   /**
    *
    */
   TEXT_CHANNEL("notifytextmessage", "textchannel", new ArrayList<String>() {
-
-{
-add("event");
-}
-}),
+    {
+      add("event");
+    }
+  }),
   /**
    *
    */
   TEXT_PRIVATE("notifytextmessage", "textprivate", new ArrayList<String>() {
-
-{
-add("event");
-}
-});
+    {
+      add("event");
+    }
+  });
+  /**
+   * The event name the query expects
+   */
   private final String event;
+  /**
+   * Possible sub-events the query expects
+   */
   private final String notify_type;
+  /**
+   * Additional parameters which need to be defined
+   */
   private final List<String> parameters;
 
   private EventType(String event, String notify_type, List<String> params) {

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2013 Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>.
  *
- * QueryEventExecutioner.java - 2012-08-29
+ * HostMessageMode.java - 2013-05-21
  *
  * YATSQUO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -17,24 +17,38 @@
  * License along with YATSQUO; If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package net.servertube.yatsquo;
-
-import net.servertube.yatsquo.Data.EventType;
-import java.util.HashMap;
+package net.servertube.yatsquo.Data;
 
 /**
- *
+ * Reflects the possible modes for host messages (displayed on connecting)
  * @author Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>
  */
-public interface QueryEventExecutioner {
+public enum HostMessageMode {
 
   /**
-   * Executes the event raised giving the event type and data<br />
-   * Override this function and create the QueryInterface<br />
-   * with your own QueryListener as parameter.
-   *
-   * @param type
-   * @param data
+   * display message in chatlog
    */
-    public void executeEvent(EventType type, HashMap<String, String> data);
+  LOG(1),
+  /**
+   * display message in modal dialog
+   */
+  MODAL(2),
+  /**
+   * display message in modal dialog and close connection
+   */
+  MODALQUIT(3);
+  private final int id;
+
+  private HostMessageMode(int id) {
+    this.id = id;
+  }
+
+  public int getId() {
+    return id;
+  }
+
+  @Override
+  public String toString() {
+    return String.valueOf(id);
+  }
 }

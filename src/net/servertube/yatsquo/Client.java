@@ -1,6 +1,8 @@
 /*
  * Copyright (C) 2013 Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>.
  *
+ * Client.java - 2012-08-29
+ *
  * YATSQUO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 3 of
@@ -22,9 +24,8 @@ import java.util.HashMap;
 
 /**
  *
- * @author Sebastian "prodigy" G.
+ * @author Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>
  */
-
 public class Client {
 
   private Server server;
@@ -77,24 +78,37 @@ public class Client {
   private Long connected_time;
   private String client_ip;
 
-  public Client(Integer ID, Server server) {
+  /**
+   * creates a new client and requests all available information through query
+   *
+   * @param ID
+   * @param server
+   */
+  public Client(Integer ID, Server server) throws QueryException {
     this.server = server;
     this.client_id = ID;
-    try {
-      this.fillClientInfo();
-      this.registerClient();
-    } catch (QueryException ex) {
-      System.err.println("Error while filling Channel object with data!");
-    }
+    this.fillClientInfo();
+    this.registerClient();
   }
 
-  public Client(String ID, Server server) {
+  /**
+   * creates a new client and requests all available information through query
+   *
+   * @param ID
+   * @param server
+   */
+  public Client(String ID, Server server) throws QueryException {
     this(Integer.parseInt(ID), server);
   }
 
+  /**
+   * requests all information available about the client from query
+   *
+   * @throws QueryException
+   */
   private void fillClientInfo() throws QueryException {
     QueryResponse qr = server.executeCommand(new QueryCommand("clientinfo").param("clid", this.client_id));
-    if(qr.hasError()) {
+    if (qr.hasError()) {
       throw new QueryException("Error retrieving Client info: ", qr.getErrorResponse());
     }
 
@@ -149,10 +163,18 @@ public class Client {
     this.client_ip = info.get("connection_client_ip");
   }
 
+  /**
+   * registers the client to the server
+   */
   private void registerClient() {
     server.registerClient(this);
   }
 
+  /**
+   * returns the client ID
+   *
+   * @return
+   */
   public Integer getClientID() {
     return client_id;
   }

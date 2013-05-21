@@ -1,6 +1,8 @@
 /*
  * Copyright (C) 2013 Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>.
  *
+ * CommunicationLog.java - 2012-08-29
+ *
  * YATSQUO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 3 of
@@ -30,21 +32,17 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Sebastian "prodigy" G.
+ * @author Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>
  */
 public class CommunicationLog {
   private static PrintStream cLogOut;
   private static SimpleDateFormat dateFormat;
   /**
    * An internal Throwable used to determine the source stack.
-   *
-   * @since 08.09.2012
    */
   private static Throwable source = null;
   /**
    * A list of the current source stack.
-   *
-   * @since 08.09.2012
    */
   private static ArrayList<HashMap<String, String>> sourceStack = null;
 
@@ -68,9 +66,7 @@ public class CommunicationLog {
     try {
       cLogOut = new PrintStream(file, "UTF-8");
       return true;
-    } catch (FileNotFoundException ex) {
-      Logger.getLogger(CommunicationLog.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (UnsupportedEncodingException ex) {
+    } catch (FileNotFoundException | UnsupportedEncodingException ex) {
       Logger.getLogger(CommunicationLog.class.getName()).log(Level.SEVERE, null, ex);
     }
     return false;
@@ -97,8 +93,6 @@ public class CommunicationLog {
   /**
    * Fills the sourceStack with the relevant information.<br /> This data can be
    * displayed when the message is displayed.
-   *
-   * @since 08.09.2012
    */
   private static void fillSourceStack() {
     source = new Throwable();

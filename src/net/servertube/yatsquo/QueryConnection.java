@@ -1,6 +1,8 @@
 /*
  * Copyright (C) 2013 Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>.
  *
+ * QueryConnection.java - 2013-05-17
+ *
  * YATSQUO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 3 of
@@ -28,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.servertube.yatsquo.Data.ErrorCodes;
 
 /**
  *
@@ -46,6 +49,16 @@ public class QueryConnection {
   private int connectionErrors = 0;
   private Integer serverID = null;
 
+  /**
+   * initializes a new query connection to the given ip and port and<br />
+   * tries to login using given username and password
+   *
+   * @param ip
+   * @param port
+   * @param user
+   * @param pass
+   * @throws QueryException
+   */
   public QueryConnection(String ip, int port, String user, String pass) throws QueryException {
     this.ip = ip;
     this.port = port;
@@ -54,9 +67,16 @@ public class QueryConnection {
     initialize();
   }
 
+  /**
+   * initializes the connection (safe call in case constructor is overriden)
+   *
+   * @throws QueryException
+   */
   private void initialize() throws QueryException {
     connect(ip, port);
-    login(user, pass);
+    if ((user != null && !user.isEmpty()) || (pass != null && !pass.isEmpty())) {
+      login(user, pass);
+    }
   }
 
   /**
@@ -88,13 +108,13 @@ public class QueryConnection {
    */
   protected boolean connect(String ip, int port) throws QueryException {
     if (socket != null) {
-      throw new QueryException("Connection still open!");
+      throw new QueryException(ErrorCodes.CONNECTION_NOT_CONNECTED);
     }
     try {
       socket = new Socket(ip, port);
     } catch (Exception ex) {
       socket = null;
-      throw new QueryException("Unable to open socket: " + ex.getMessage());
+      throw new QueryException(ErrorCodes.CONNECTION_UNABLE_OPEN_SOCKET, ex.getMessage());
     }
 
     if (socket.isConnected()) {
@@ -118,11 +138,11 @@ public class QueryConnection {
           return true;
         } else {
           closeConnection();
-          throw new QueryException("No TS3 query port detected!");
+          throw new QueryException(ErrorCodes.CONNECTION_TS3_NOT_PRESENT);
         }
       } catch (Exception ex) {
         socket = null;
-        throw new QueryException("Error while connecting: " + ex.getMessage());
+        throw new QueryException(ErrorCodes.CONNECTION_ERROR_CONNECTING, ex.getMessage());
       }
     } else {
       try {
@@ -145,7 +165,7 @@ public class QueryConnection {
     try {
       socket.close();
     } catch (IOException ex) {
-      System.err.println("Unknown error while closing connection");
+      throw new QueryException(ErrorCodes.CONNECTION_CLOSING_FAILED, ex.getMessage());
     } finally {
       socket = null;
     }
@@ -160,7 +180,7 @@ public class QueryConnection {
    */
   private QueryResponse readLine(String command) throws QueryException {
     if (!socket.isConnected()) {
-      throw new QueryException("Cannot read from input stream: Not connected!");
+      throw new QueryException(ErrorCodes.CONNECTION_NOT_CONNECTED);
     }
 
     String data = "";
@@ -172,7 +192,7 @@ public class QueryConnection {
       } catch (SocketTimeoutException | SocketException ex) {
         ++this.connectionErrors;
         if (this.connectionErrors > 3) {
-          throw new QueryException("Socket error while reading from input stream:\n" + ex.toString());
+          throw new QueryException(ErrorCodes.CONNECTION_SOCKET_READ_ERROR, ex.toString());
         }
         Logger.getLogger(QueryInterface.class.getName()).log(Level.WARNING, "Lost connection to TS3, attempting to reconnect");
         this.closeConnection();
@@ -181,12 +201,12 @@ public class QueryConnection {
         this.selectVirtualserver(serverID);
         return this.executeCommand(command);
       } catch (Exception ex) {
-        throw new QueryException("Error reading line from input Stream:\n" + ex.toString());
+        throw new QueryException(ErrorCodes.CONNECTION_SOCKET_READ_ERROR, ex.toString());
       }
 
       if (tmp == null) {
         this.closeConnection();
-        throw new QueryException("NULL result from input stream; Connection lost?");
+        throw new QueryException(ErrorCodes.CONNECTION_NULL_RESPONSE);
       }
 
       if (tmp.startsWith("error")) {
@@ -208,11 +228,8 @@ public class QueryConnection {
     inLHM = QueryTools.parseInput(tmp);
     if (inLHM == null) {
       this.closeConnection();
-      throw new QueryException("parsing returned NULL object; Connection lost?");
+      throw new QueryException(ErrorCodes.PARSER_NULL_RESULT);
     }
-    /*if(!inLHM.get(0).get("id").equals("0")) {
-     throw new QueryException("Error while executing command!", inLHM.get(0));
-     }*/
     List<HashMap<String, String>> dataList = QueryTools.parseInput(data);
     if (dataList != null) {
       inLHM.addAll(dataList);
@@ -244,7 +261,7 @@ public class QueryConnection {
    */
   public QueryResponse executeCommand(String command) throws QueryException {
     if (!socket.isConnected()) {
-      throw new QueryException("Command failed: No active connection!");
+      throw new QueryException(ErrorCodes.CONNECTION_NOT_CONNECTED);
     }
     CommunicationLog.log(command, true);
     this.out.println(command);
@@ -259,7 +276,7 @@ public class QueryConnection {
    */
   public QueryResponse executeCommand(QueryCommand command) throws QueryException {
     if (!socket.isConnected()) {
-      throw new QueryException("Command failed: No active connection!");
+      throw new QueryException(ErrorCodes.CONNECTION_NOT_CONNECTED);
     }
     CommunicationLog.log(command.toString(), true);
     this.out.println(command.toString());

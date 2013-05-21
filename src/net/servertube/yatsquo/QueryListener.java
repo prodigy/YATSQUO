@@ -1,6 +1,8 @@
 /*
  * Copyright (C) 2013 Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>.
  *
+ * QueryListener.java - 2012-08-29
+ *
  * YATSQUO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 3 of
@@ -26,16 +28,18 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import net.servertube.yatsquo.Data.ErrorCodes;
 
 /**
  * Class needed in order to receive events raised by the TS3 Server
  *
- * @author Sebastian Grunow
- * @since 0.1a
+ * @author Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>
  */
-public abstract class QueryListener {
+public abstract class QueryListener implements QueryEventExecutioner {
 
-  private List<EventType> events = new ArrayList<EventType>();
+  private List<EventType> events = null;
   private QueryInterface qi = null;
   private BufferedReader in = null;
   private Timer eventTimer = null;
@@ -44,15 +48,24 @@ public abstract class QueryListener {
   private QueryConnection qCon = null;
 
   /**
+   * creates a new query listener, which connects to given ip and port<br />
+   * logs in with given user and password, and selects given server id
    *
-   * @param qi
+   * @param ip
+   * @param user
+   * @param port
+   * @param pass
+   * @param serverID
+   * @throws QueryException
    */
   public QueryListener(String ip, Integer port, String user, String pass, Integer serverID) throws QueryException {
-    qCon = new QueryConnection(ip, port, user, pass);
-    qCon.selectVirtualserver(serverID);
+    this.events = new ArrayList<EventType>();
+    this.qCon = new QueryConnection(ip, port, user, pass);
+    this.qCon.selectVirtualserver(serverID);
   }
 
   /**
+   * disables this event listener
    *
    * @param clearRegisteredEvents
    */
@@ -72,7 +85,7 @@ public abstract class QueryListener {
   }
 
   /**
-   *
+   * enables this event listener
    */
   public void enableEventListener() {
     if (eventTimer != null || eventTimerTask != null) {
@@ -86,21 +99,12 @@ public abstract class QueryListener {
   }
 
   /**
-   * Executes the event raised giving the event type and data<br />
-   * Override this function and create the QueryInterface<br />
-   * with your own QueryListener as parameter.
-   *
-   * @param type
-   * @param data
-   */
-  public abstract void executeEvent(EventType type, HashMap<String, String> data);
-
-  /**
    *
    * @param line
    * @return
+   * @throws QueryException
    */
-  public boolean handleEvent(String line) {
+  public boolean handleEvent(String line) throws QueryException {
     if (line.startsWith("notify")) {
       System.out.println("received notify: " + line);
       StringTokenizer tkn = new StringTokenizer(line, " ");
@@ -113,7 +117,7 @@ public abstract class QueryListener {
           event = EventType.getTypeByEventID(eventType);
         }
         if (event == null) {
-          System.err.println("Unknwon event type: " + eventType);
+          throw new QueryException(ErrorCodes.EVENT_UNKNOWN, eventType.toString());
         } else {
           System.out.println("Event type assigned: " + event.toString());
         }
@@ -143,10 +147,11 @@ public abstract class QueryListener {
   }
 
   /**
+   * registers an event to listen for (servernotifyregister)
    *
    * @param type
    * @param params
-   * @return
+   * @return success
    * @throws QueryException
    */
   protected final boolean registerEvent(EventType type, HashMap<String, Object> params) throws QueryException {
@@ -174,9 +179,10 @@ public abstract class QueryListener {
   }
 
   /**
+   * unregisters an event
    *
    * @param type
-   * @return
+   * @return success
    */
   protected final boolean unregisterEvent(EventType type) {
     if (events.contains(type)) {
@@ -188,8 +194,9 @@ public abstract class QueryListener {
 
   /**
    *
+   * @throws QueryException
    */
-  public synchronized void eventCheck() {
+  public synchronized void eventCheck() throws QueryException {
     try {
       if (this.in.ready()) {
         String inLine = in.readLine();
@@ -199,11 +206,9 @@ public abstract class QueryListener {
         }
       }
     } catch (IOException ex) {
-      System.err.println("QueryListener: Error reading line from input stream");
-      ex.printStackTrace();
+      throw new QueryException(ErrorCodes.CONNECTION_SOCKET_READ_ERROR);
     } catch (Exception ex) {
-      System.err.println("QueryListener: Error while reading line from input stream");
-      ex.printStackTrace();
+      throw new QueryException(ErrorCodes.CONNECTION_SOCKET_READ_ERROR);
     }
     try {
       this.wait(100);
@@ -211,11 +216,21 @@ public abstract class QueryListener {
     }
   }
 
+  /**
+   *
+   */
   private class eventTimerTask extends TimerTask {
 
+    /**
+     *
+     */
     @Override
     public void run() {
-      eventCheck();
+      try {
+        eventCheck();
+      } catch (QueryException ex) {
+        Logger.getLogger(QueryListener.class.getName()).log(Level.SEVERE, null, ex);
+      }
     }
   }
 }

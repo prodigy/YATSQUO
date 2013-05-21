@@ -1,6 +1,8 @@
 /*
  * Copyright (C) 2013 Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>.
  *
+ * QueryCommand.java - 2012-08-29
+ *
  * YATSQUO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 3 of
@@ -26,7 +28,7 @@ import java.util.Map.Entry;
 
 /**
  *
- * @author Sebastian "prodigy" G.
+ * @author Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>
  */
 public class QueryCommand {
 
@@ -35,6 +37,11 @@ public class QueryCommand {
   private List<String> noValueParams;
   private List<String> options;
 
+  /**
+   * command without any params
+   *
+   * @param command
+   */
   public QueryCommand(String command) {
     this.command = command;
     this.parameters = new HashMap<String, Object>();
@@ -42,6 +49,12 @@ public class QueryCommand {
     this.options = new ArrayList<String>();
   }
 
+  /**
+   * command with params (key/value pairs)
+   *
+   * @param command
+   * @param parameters
+   */
   public QueryCommand(String command, HashMap<String, Object> parameters) {
     this.command = command;
     this.parameters = parameters;
@@ -49,6 +62,14 @@ public class QueryCommand {
     this.options = new ArrayList<String>();
   }
 
+  /**
+   * command with params (key/value pairs) and options (only keys without
+   * =value)
+   *
+   * @param command
+   * @param parameters
+   * @param options
+   */
   public QueryCommand(String command, HashMap<String, Object> parameters, List<String> options) {
     this.command = command;
     this.parameters = parameters;
@@ -56,6 +77,13 @@ public class QueryCommand {
     this.options = options;
   }
 
+  /**
+   * adds a single parameter
+   *
+   * @param key
+   * @param value
+   * @return
+   */
   public QueryCommand param(String key, Object value) {
     if (key == null) {
       return this;
@@ -64,10 +92,22 @@ public class QueryCommand {
     return this;
   }
 
+  /**
+   * adds a parameter without value
+   *
+   * @param key
+   * @return
+   */
   public QueryCommand param(String key) {
     return this.param(key, null);
   }
 
+  /**
+   * adds multiple parameters from HashMap
+   *
+   * @param params
+   * @return
+   */
   public QueryCommand param(HashMap<String, Object> params) {
     if (params.isEmpty()) {
       return this;
@@ -76,6 +116,12 @@ public class QueryCommand {
     return this;
   }
 
+  /**
+   * adds multiple params without value
+   *
+   * @param param
+   * @return
+   */
   public QueryCommand noValParam(String... param) {
     if (param == null) {
       return this;
@@ -84,6 +130,12 @@ public class QueryCommand {
     return this;
   }
 
+  /**
+   * adds multiple options
+   *
+   * @param options
+   * @return
+   */
   public QueryCommand option(String... options) {
     if (options == null) {
       return this;
@@ -92,6 +144,11 @@ public class QueryCommand {
     return this;
   }
 
+  /**
+   * returns the commands as string to send to query
+   *
+   * @return
+   */
   @Override
   public String toString() {
     String cmdString = this.command;

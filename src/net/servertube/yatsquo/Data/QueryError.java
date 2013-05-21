@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2013 Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>.
  *
- * ClientListMode.java - 2012-08-29
+ * QueryError.java - 2013-05-21
  *
  * YATSQUO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -23,18 +23,41 @@ package net.servertube.yatsquo.Data;
  *
  * @author Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>
  */
-public enum ClientListMode {
+public class QueryError {
 
-  CLIENT_LIST("clientlist"),
-  DB_CLIENT_LIST("clientdblist");
+  public final int id;
+  public final String msg;
+  public final String extra_msg;
+  public final int failed_permid;
 
-  private String command;
-
-  private ClientListMode(String command) {
-    this.command = command;
+  public QueryError(int id, String msg, String extra_msg, int failed_permid) {
+    this.id = id;
+    this.msg = msg;
+    this.extra_msg = extra_msg;
+    this.failed_permid = failed_permid;
   }
 
-  public String getCommand() {
-    return command;
+  public int getId() {
+    return id;
+  }
+
+  public String getMsg() {
+    return msg;
+  }
+
+  public String getExtra_msg() {
+    return extra_msg;
+  }
+
+  public int getFailed_permid() {
+    return failed_permid;
+  }
+
+  @Override
+  public String toString() {
+    return "QueryError (" + this.id + ") : " + this.msg +
+            ((this.extra_msg!=null && !this.extra_msg.isEmpty())?
+            " [ " + this.extra_msg + " ] ":"") + ((failed_permid!=0)?
+            " (failed_permid: " + this.failed_permid + ")":"");
   }
 }

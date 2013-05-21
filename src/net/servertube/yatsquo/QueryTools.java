@@ -1,6 +1,8 @@
 /*
  * Copyright (C) 2013 Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>.
  *
+ * QueryTools.java - 2012-08-29
+ *
  * YATSQUO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 3 of
@@ -18,7 +20,6 @@
 package net.servertube.yatsquo;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.StringTokenizer;
@@ -26,11 +27,12 @@ import java.util.HashMap;
 
 /**
  *
- * @author Sebastian "prodigy" G.
+ * @author Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>
  */
 public class QueryTools {
 
   /**
+   * encodes a given string to be compatible to the ts3 query
    *
    * @param str
    * @return
@@ -56,6 +58,7 @@ public class QueryTools {
   }
 
   /**
+   * decodes a given string so it is processable as normal string
    *
    * @param str
    * @return
@@ -82,6 +85,8 @@ public class QueryTools {
   }
 
   /**
+   * (internal) input parser, returns the data of a query input<br />
+   * tokenizes by "|"
    *
    * @param line
    * @return
@@ -100,6 +105,8 @@ public class QueryTools {
   }
 
   /**
+   * (internal) input parser, returns the data of a query input<br />
+   * tokenizes by " "
    *
    * @param line
    * @return
@@ -127,6 +134,7 @@ public class QueryTools {
   }
 
   /**
+   * builds a command from a SortedMap with key / value pairs
    *
    * @param command
    * @param params
@@ -144,6 +152,8 @@ public class QueryTools {
   }
 
   /**
+   * returns a boolean value as Integer<br />
+   * true = 1 false = 0
    *
    * @param in
    * @return
@@ -156,6 +166,9 @@ public class QueryTools {
   }
 
   /**
+   * returns a boolean value as String<br />
+   * true = "1"<br />
+   * false = "0"
    *
    * @param in
    * @return
@@ -167,6 +180,16 @@ public class QueryTools {
     return (in ? "1" : "0");
   }
 
+  /**
+   * A function that creates an ArrasList based of a String input.<br /><br />
+   * The second _class parameter requires an existing class to<br />
+   * which the tokens of the input are cast to.
+   *
+   * @param <T>
+   * @param items
+   * @param _class
+   * @return
+   */
   public static <T> ArrayList<T> buildList(String items, Class<T> _class) {
     if (items == null || items.length() < 1) {
       return null;
@@ -177,7 +200,6 @@ public class QueryTools {
     while (tkn.hasMoreTokens()) {
       String next = tkn.nextToken();
       if (_class.getSuperclass().getName().contains("Number")) {
-        System.out.println("_class extending Number");
         if (_class.equals(Integer.class)) {
           list.add((T) Integer.valueOf(next));
         } else if (_class.equals(Long.class)) {

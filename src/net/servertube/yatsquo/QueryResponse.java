@@ -1,6 +1,8 @@
 /*
  * Copyright (C) 2013 Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>.
  *
+ * QueryResponse.java - 2012-08-29
+ *
  * YATSQUO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 3 of
@@ -26,7 +28,7 @@ import java.util.HashMap;
 
 /**
  *
- * @author Sebastian "prodigy" G.
+ * @author Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>
  */
 public class QueryResponse implements Iterable<HashMap<String, String>> {
 
@@ -41,9 +43,8 @@ public class QueryResponse implements Iterable<HashMap<String, String>> {
   }
 
   /*public HashMap<String, String> getFirstResponse() {
-    return this.response.get(0);
-  }*/
-
+   return this.response.get(0);
+   }*/
   public HashMap<String, String> getErrorResponse() {
     return this.response.get(0);
   }
@@ -53,11 +54,10 @@ public class QueryResponse implements Iterable<HashMap<String, String>> {
   }
 
   /*public HashMap<String, String> getResponseByID(int id) {
-    return this.response.get(id);
-  }*/
-
+   return this.response.get(id);
+   }*/
   public boolean hasError() {
-    return (this.response.get(0).get("id").equals("0"))?false:true;
+    return (this.response.get(0).get("id").equals("0")) ? false : true;
   }
 
   @Override
@@ -82,5 +82,4 @@ public class QueryResponse implements Iterable<HashMap<String, String>> {
     responseString += "}\n";
     return responseString;
   }
-
 }

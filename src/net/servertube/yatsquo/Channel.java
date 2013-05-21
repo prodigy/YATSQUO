@@ -1,6 +1,8 @@
 /*
  * Copyright (C) 2013 Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>.
  *
+ * Channel.java - 2012-08-29
+ *
  * YATSQUO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 3 of
@@ -21,8 +23,10 @@ import java.util.HashMap;
 import net.servertube.yatsquo.Data.Codec;
 
 /**
- * <strong>The Channel class provides all necessary tools to manage the channels in your server.</strong>
- * @author Sebastian "prodigy" G.
+ * <strong>The Channel class provides all necessary tools to manage the channels
+ * in your server.</strong>
+ *
+ * @author Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>
  */
 public class Channel {
 
@@ -53,37 +57,41 @@ public class Channel {
   private Integer icon_id;
 
   /**
-   * When initializing a new Channel object with this constructor the library<br />
+   * When initializing a new Channel object with this constructor the library<br
+   * />
    * will fetch all necessary data from the query port.<br />
    * <strong>Requires the given Channel ID to be existent</strong>
+   *
    * @param ID The channel ID to get the infor for
    * @param server A server Object the channel will be assigned to
    */
-  public Channel(Integer ID, Server server) {
+  public Channel(Integer ID, Server server) throws QueryException {
     this.ID = ID;
     this.server = server;
-    try {
-      this.fillChannelInfo();
-      this.registerChannel();
-    } catch (QueryException ex) {
-      System.err.println("Error while filling Channel object with data!");
-    }
+    this.fillChannelInfo();
+    this.registerChannel();
   }
 
   /**
    * String version of the data-fetch-constructor (see above)
+   *
    * @param ID The channel ID to get the infor for
    * @param server A server Object the channel will be assigned to
    */
-  public Channel(String ID, Server server) {
+  public Channel(String ID, Server server) throws QueryException {
     this(Integer.parseInt(ID), server);
   }
 
   /**
-   * This constructor creates a new Channel object with all the available optional parameters.<br />
-   * Only the server and name parameters are vital, the rest can be set to null!<br /><br />
-   * After creating the Channel object call the createAndRegister() function if you want<br />
-   * the channel to be created in your server! All missing data will be filled in automatically.
+   * This constructor creates a new Channel object with all the available
+   * optional parameters.<br />
+   * Only the server and name parameters are vital, the rest can be set to
+   * null!<br /><br />
+   * After creating the Channel object call the createAndRegister() function if
+   * you want<br />
+   * the channel to be created in your server! All missing data will be filled
+   * in automatically.
+   *
    * @param server A server Object the channel will be assigned to
    * @param name The channels name
    * @param name_phonetic The channels phonetic name
@@ -143,10 +151,12 @@ public class Channel {
   }
 
   /**
-   * After initializing a new Channel object call this function to actually<br />
+   * After initializing a new Channel object call this function to actually<br
+   * />
    * create the channel in the server it is assigned to.<br />
    * <strong>Will only function when the channel has no ID set!<br />
    * That means when the channel is not already registered!</strong>
+   *
    * @return boolean success
    * @throws QueryException
    */
@@ -223,13 +233,18 @@ public class Channel {
     return true;
   }
 
+  /**
+   * registers the channel to the server object
+   */
   private void registerChannel() {
     server.registerChannel(this);
   }
 
   /**
    * Deletes the Channel from the server and destroy the object
-   * @param forceDeletion force deletion even if there are clients in the channel
+   *
+   * @param forceDeletion force deletion even if there are clients in the
+   * channel
    * @return boolean success
    * @throws QueryException
    */
@@ -242,6 +257,11 @@ public class Channel {
     throw new QueryException("Error while deleting channel", qr.getErrorResponse());
   }
 
+  /**
+   * requests all information available about the channel
+   *
+   * @throws QueryException
+   */
   private void fillChannelInfo() throws QueryException {
     QueryResponse qr = server.executeCommand(new QueryCommand("channelinfo").param("cid", this.getID()));
     if (qr.hasError()) {
@@ -298,6 +318,7 @@ public class Channel {
 
   /**
    * Set the Codec to use
+   *
    * @param codec
    * @return boolean success
    * @throws QueryException
@@ -312,6 +333,7 @@ public class Channel {
 
   /**
    * Get the codec latency factor
+   *
    * @return int
    */
   public int getCodec_latency_factor() {
@@ -320,6 +342,7 @@ public class Channel {
 
   /**
    * Set the codec latency factor
+   *
    * @param codec_latency_factor
    * @return boolean success
    * @throws QueryException
@@ -334,6 +357,7 @@ public class Channel {
 
   /**
    * Get the codec quality
+   *
    * @return int
    */
   public int getCodec_quality() {
@@ -342,6 +366,7 @@ public class Channel {
 
   /**
    * Set the codec quality
+   *
    * @param codec_quality
    * @return boolean success
    * @throws QueryException
@@ -356,6 +381,7 @@ public class Channel {
 
   /**
    * Get the channel description
+   *
    * @return String
    */
   public String getDescription() {
@@ -364,6 +390,7 @@ public class Channel {
 
   /**
    * Set the channel description
+   *
    * @param description
    * @return boolean success
    * @throws QueryException
@@ -378,6 +405,7 @@ public class Channel {
 
   /**
    * Check if the channel is the default channel
+   *
    * @return boolean default
    */
   public boolean isIsDefaultChannel() {
@@ -387,6 +415,7 @@ public class Channel {
   /**
    * Set the channel to be the default channel<br />
    * If the channel already is the default channel no changes are made
+   *
    * @param setDefault set whether or not the channel is the default channel
    * @return boolean success
    * @throws QueryException
@@ -404,6 +433,7 @@ public class Channel {
 
   /**
    * Check if the channel is permanent
+   *
    * @return boolean permanent
    */
   public boolean isIsPermanent() {
@@ -412,6 +442,7 @@ public class Channel {
 
   /**
    * Set the channel to be permanent
+   *
    * @param setPermanent <b>true</b>: permanent; <b>false</b>: not permanent
    * @return boolean success
    * @throws QueryException
@@ -426,6 +457,7 @@ public class Channel {
 
   /**
    * Check if the channel is semi permanent
+   *
    * @return boolean semi permanent
    */
   public boolean isIsSemiPermanent() {
@@ -434,7 +466,9 @@ public class Channel {
 
   /**
    * Set the channel to be semi permanent
-   * @param setSemiPermanent <b>true</b>: semi permanent; <b>false</b>: not semi permanent
+   *
+   * @param setSemiPermanent <b>true</b>: semi permanent; <b>false</b>: not semi
+   * permanent
    * @return boolean success
    * @throws QueryException
    */
@@ -448,6 +482,7 @@ public class Channel {
 
   /**
    * Get the max client count of the channel
+   *
    * @return int maxclients
    */
   public int getMaxclients() {
@@ -456,6 +491,7 @@ public class Channel {
 
   /**
    * Set the max client count for the channel
+   *
    * @param maxclients new max client count
    * @return boolean success
    * @throws QueryException

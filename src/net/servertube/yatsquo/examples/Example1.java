@@ -39,6 +39,8 @@ public class Example1 {
    */
   public static void main(String[] args) throws QueryException {
     if (args.length < 4) {
+      System.err.println("Usage: java -cp YATSQUO.jar net.servertube.yatsquo.examples.Example1 IP PORT USER PASSWORD");
+      return;
     }
     try {
       QueryInterface qi = new QueryInterface(args[0], Integer.valueOf(args[1]), args[2], args[3]);
