@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.StringTokenizer;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -45,7 +46,8 @@ public abstract class QueryListener implements QueryEventExecutioner {
   private Timer eventTimer = null;
   private TimerTask eventTimerTask = null;
   private Integer serverID = null;
-  private QueryConnection qCon = null;
+  private String nickname = null;
+  public QueryConnection qCon = null;
 
   /**
    * creates a new query listener, which connects to given ip and port<br />
@@ -59,16 +61,98 @@ public abstract class QueryListener implements QueryEventExecutioner {
    * @throws QueryException
    */
   public QueryListener(String ip, Integer port, String user, String pass, Integer serverID) throws QueryException {
-    this.events = new ArrayList<EventType>();
+    this.events = new ArrayList<>();
     this.qCon = new QueryConnection(ip, port, user, pass);
     this.in = this.qCon.getInStream();
-    this.qCon.selectVirtualserver(serverID);
+    this.serverID = serverID;
+    initialize();
+  }
+
+  /**
+   * creates a new query listener, which connects to given ip and port<br />
+   * logs in with given user and password, and selects given server id
+   *
+   * @param ip
+   * @param user
+   * @param port
+   * @param pass
+   * @param serverID
+   * @throws QueryException
+   */
+  public QueryListener(String ip, Integer port, String user, String pass, Integer serverID, String nickname) throws QueryException {
+    this.events = new ArrayList<>();
+    this.qCon = new QueryConnection(ip, port, user, pass);
+    this.in = this.qCon.getInStream();
+    this.serverID = serverID;
+    this.nickname = nickname;
+    initialize();
   }
 
   public QueryListener(QueryInterface queryInterface, Integer serverID) throws QueryException {
-    this(queryInterface.qCon.getIp(), queryInterface.qCon.getPort(),
-            queryInterface.qCon.getUser(), queryInterface.qCon.getPass(),
-            serverID);
+    this.events = new ArrayList<>();
+    this.qCon = new QueryConnection(
+            queryInterface.qCon.getIp(),
+            queryInterface.qCon.getPort(),
+            queryInterface.qCon.getUser(),
+            queryInterface.qCon.getPass());
+    this.in = this.qCon.getInStream();
+    this.serverID = serverID;
+    this.qi = queryInterface;
+    initialize();
+  }
+
+  public QueryListener(QueryInterface queryInterface, Integer serverID, String nickname) throws QueryException {
+    this.events = new ArrayList<>();
+    this.qCon = new QueryConnection(
+            queryInterface.qCon.getIp(),
+            queryInterface.qCon.getPort(),
+            queryInterface.qCon.getUser(),
+            queryInterface.qCon.getPass());
+    this.in = this.qCon.getInStream();
+    this.serverID = serverID;
+    this.nickname = nickname;
+    this.qi = queryInterface;
+    initialize();
+  }
+
+  public QueryListener(QueryConnection qCon, Integer serverID, String nickname) throws QueryException {
+    this.events = new ArrayList<>();
+    this.qCon = qCon;
+    this.in = this.qCon.getInStream();
+    this.serverID = serverID;
+    this.nickname = nickname;
+    this.qi = null;
+    initialize();
+  }
+
+  private void initialize() {
+    try {
+      this.qCon.selectVirtualserver(serverID);
+      if (nickname != null) {
+        this.changeQueryClientName(nickname);
+      }
+      if (qi != null) {
+        HashMap<String, String> params = new HashMap<>();
+        params.put("clid", this.qCon.getClientID().toString());
+        Server s = qi.getServerByID(this.qCon.getServerID());
+        Channel c = s.getDefaultChannel();
+        params.put("cid", c.getID().toString());
+      }
+    } catch (QueryException ex) {
+      Logger.getLogger(QueryListener.class.getName()).log(Level.SEVERE, null, ex);
+    }
+  }
+
+  /**
+   *
+   * @param newName
+   * @return
+   * @throws QueryException
+   */
+  public final boolean changeQueryClientName(String newName) throws QueryException {
+    HashMap<String, Object> params = new HashMap<>();
+    params.put("client_nickname", newName);
+    return !this.qCon.executeCommand(new QueryCommand("clientupdate", params)).hasError();
   }
 
   /**
@@ -116,8 +200,9 @@ public abstract class QueryListener implements QueryEventExecutioner {
       StringTokenizer tkn = new StringTokenizer(line, " ");
       if (tkn.countTokens() > 1) {
         String eventType = tkn.nextToken();
-        String subType = tkn.nextToken();
-        EventType event = EventType.getTypeBySubType(subType);
+        String eventSubType = tkn.nextToken();
+        // check for notifytextmessage event and filter by subtype
+        EventType event = EventType.getTypeByParameter("notifytextmessage", "event", eventSubType);
         if (event == null) {
           event = EventType.getTypeByEventID(eventType);
         }
@@ -134,7 +219,9 @@ public abstract class QueryListener implements QueryEventExecutioner {
           }
         }
         if (isHandled) {
-          executeEvent(event, QueryTools._parseInput(line.substring(line.indexOf(" ") + 1)));
+          HashMap<String, String> data = QueryTools._parseInput(line.substring(line.indexOf(" ") + 1));
+          data.put("YATSQUO_server_id", this.qCon.getServerID().toString());
+          executeEvent(event, data);
         }
       }
       return true;
@@ -152,16 +239,15 @@ public abstract class QueryListener implements QueryEventExecutioner {
    */
   public final boolean registerEvent(EventType type, HashMap<String, Object> params) throws QueryException {
     if (!events.contains(type)) {
-      List<String> paramList = type.getParameters();
+      HashMap<String, String> paramList = type.getParameters();
       HashMap<String, Object> paramsFinal = new HashMap<String, Object>();
-      for (String param : paramList) {
-        if (param.equals("event")) {
-          paramsFinal.put(param, type.getNotifyType());
-          continue;
-        }
-        if (params != null) {
-          if (params.containsKey(param)) {
-            paramsFinal.put(param, params.get(param));
+      if (paramList.containsKey("event")) {
+        paramsFinal.put("event", paramList.get("event"));
+      }
+      if (params != null) {
+        for (Entry<String, Object> entry : params.entrySet()) {
+          if (paramList.containsKey(entry.getKey())) {
+            paramsFinal.put(entry.getKey(), entry.getValue());
           }
         }
       }
@@ -201,10 +287,12 @@ public abstract class QueryListener implements QueryEventExecutioner {
           this.handleEvent(inLine);
         }
       }
+    } catch (QueryException ex) {
+      throw ex;
     } catch (IOException ex) {
       throw new QueryException(ErrorCodes.CONNECTION_SOCKET_READ_ERROR);
     } catch (Exception ex) {
-      throw new QueryException(ErrorCodes.CONNECTION_SOCKET_READ_ERROR);
+      throw ex;
     }
     try {
       this.wait(100);

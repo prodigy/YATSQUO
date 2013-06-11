@@ -20,6 +20,7 @@
 package net.servertube.yatsquo.Data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -31,69 +32,69 @@ public enum EventType {
   /**
    * Returned if a client enters the view
    */
-  CLIENT_ENTERVIEW("notifycliententerview", null, null),
+  CLIENT_ENTERVIEW("notifycliententerview", null),
   /**
    * Returned if a client leaves the view
    */
-  CLIENT_LEFTVIEW("notifyclientleftview", null, null),
+  CLIENT_LEFTVIEW("notifyclientleftview", null),
   /**
    * Returned when a notifytextmessage event occurs.
    */
-  EVENT_TEXTMESSAGE("notifytextmessage", null, null),
+  EVENT_TEXTMESSAGE("notifytextmessage", null),
   /**
    * Returned when a notifyclientmoved event occurs.
    */
-  EVENT_CLIENT_MOVED("notifyclientmoved", null, null),
+  EVENT_CLIENT_MOVED("notifyclientmoved", null),
   /**
    * Used to register the notifycliententerview event, possible paramter is
    * event.
    */
-  REGISTER_ENTER_VIEW("notifycliententerview", "server", new ArrayList<String>() {
+  REGISTER_ENTER_VIEW("notifycliententerview", new HashMap<String, String>() {
     {
-      add("event");
+      put("event", "server");
     }
   }),
   /**
    * Used to register the notifycliententerview event, possible paramter is
    * event.
    */
-  REGISTER_LEFT_VIEW("notifyclientleftview", "server", new ArrayList<String>() {
+  REGISTER_LEFT_VIEW("notifyclientleftview", new HashMap<String, String>() {
     {
-      add("event");
+      put("event", "server");
     }
   }),
   /**
-   * Used to register notifyclientmoved events, possible parameters are
-   * event and id.
+   * Used to register notifyclientmoved events, possible parameters are event
+   * and id.
    */
-  REGISTER_CLIENT_MOVED("notifyclientmoved", "channel", new ArrayList<String>() {
+  REGISTER_CLIENT_MOVED("notifyclientmoved", new HashMap<String, String>() {
     {
-      add("event");
-      add("id");
+      put("event", "channel");
+      put("id", null);
     }
   }),
   /**
    * Used to register text message events (server wide)
    */
-  REGISTER_TEXT_SERVER("notifytextmessage", "textserver", new ArrayList<String>() {
+  REGISTER_TEXT_SERVER("notifytextmessage", new HashMap<String, String>() {
     {
-      add("event");
+      put("event", "textserver");
     }
   }),
   /**
    * Used to register text message events (channel wide)
    */
-  REGISTER_TEXT_CHANNEL("notifytextmessage", "textchannel", new ArrayList<String>() {
+  REGISTER_TEXT_CHANNEL("notifytextmessage", new HashMap<String, String>() {
     {
-      add("event");
+      put("event", "textchannel");
     }
   }),
   /**
    * Used to register text message events (private)
    */
-  REGISTER_TEXT_PRIVATE("notifytextmessage", "textprivate", new ArrayList<String>() {
+  REGISTER_TEXT_PRIVATE("notifytextmessage", new HashMap<String, String>() {
     {
-      add("event");
+      put("event", "textprivate");
     }
   });
   /**
@@ -101,17 +102,12 @@ public enum EventType {
    */
   private final String event;
   /**
-   * Possible sub-events the query expects
-   */
-  private final String notify_type;
-  /**
    * Additional parameters which need to be defined
    */
-  private final List<String> parameters;
+  private final HashMap<String, String> parameters;
 
-  private EventType(String event, String notify_type, List<String> params) {
+  private EventType(String event, HashMap<String, String> params) {
     this.event = event;
-    this.notify_type = notify_type;
     this.parameters = params;
   }
 
@@ -127,15 +123,7 @@ public enum EventType {
    *
    * @return
    */
-  public String getNotifyType() {
-    return notify_type;
-  }
-
-  /**
-   *
-   * @return
-   */
-  public List<String> getParameters() {
+  public HashMap<String, String> getParameters() {
     return parameters;
   }
 
@@ -160,13 +148,13 @@ public enum EventType {
    * @param event
    * @return
    */
-  public static EventType getTypeBySubType(String subType) {
-    if (subType != null) {
+  public static EventType getTypeByParameter(String event, String key, String value) {
+    if (key != null || value != null) {
       for (EventType ev : EventType.values()) {
-        if (ev.notify_type == null) {
-          continue;
-        }
-        if (ev.notify_type.equals(subType)) {
+        if (ev.event.equals(event)
+                && ev.parameters != null
+                && ev.parameters.containsKey(key)
+                && ev.parameters.get(key).equals(value)) {
           return ev;
         }
       }

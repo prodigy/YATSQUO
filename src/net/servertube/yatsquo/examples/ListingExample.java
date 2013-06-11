@@ -18,6 +18,7 @@
 package net.servertube.yatsquo.examples;
 
 import net.servertube.yatsquo.Channel;
+import net.servertube.yatsquo.Client;
 import net.servertube.yatsquo.QueryException;
 import net.servertube.yatsquo.QueryInterface;
 import net.servertube.yatsquo.Server;
@@ -51,6 +52,9 @@ public class ListingExample {
         for (Channel c : s.getChannels()) {
           // print out ID and name of the channels belonging to Server s
           System.out.println(" - Channel (" + c.getID() + "): " + c.getName());
+          for (Client cl : c.getClients()) {
+            System.out.println(" |- Client (" + cl.getClientID() + "): " + cl.getNickname());
+          }
         }
       }
     } catch (QueryException ex) {

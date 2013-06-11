@@ -22,13 +22,16 @@ package net.servertube.yatsquo;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.servertube.yatsquo.Data.ErrorCodes;
+import net.servertube.yatsquo.Data.TextMessageTargetMode;
 
 /**
  *
  * @author Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>
  */
-public class Server {
+public class Server extends TS3Object {
 
   /**
    * This has to be an <strong>existing, already connected</strong>
@@ -38,7 +41,6 @@ public class Server {
   protected QueryInterface queryInterface;
   private List<Channel> channels = new ArrayList<Channel>();
   private List<Client> clients = new ArrayList<Client>();
-  private Integer ID;
   private Integer port;
   private Boolean online;
   private Integer maxclients;
@@ -59,6 +61,7 @@ public class Server {
   private String version;
   private Integer uptime;
   private String platform;
+  private Channel defaultChannel;
 
   /**
    *
@@ -275,6 +278,9 @@ public class Server {
    */
   protected void registerChannel(Channel channel) {
     this.channels.add(channel);
+    if (channel.isDefaultChannel()) {
+      this.defaultChannel = channel;
+    }
   }
 
   /**
@@ -361,7 +367,9 @@ public class Server {
        * the channel to the Server channels list.
        * this.channels.add(new Channel(channel.get("cid"), this));
        */
-      Channel c = new Channel(channel.get("cid"), this);
+      if (this.getChannelByID(Integer.parseInt(channel.get("cid"))) == null) {
+        Channel c = new Channel(channel.get("cid"), this);
+      }
     }
     return true;
   }
@@ -373,7 +381,9 @@ public class Server {
     }
 
     for (HashMap<String, String> client : qr.getDataResponse()) {
-      Client c = new Client(client.get("clid"), this);
+      if (this.getClientByID(Integer.parseInt(client.get("clid"))) == null) {
+        Client c = new Client(client.get("clid"), this);
+      }
     }
     return true;
   }
@@ -409,15 +419,6 @@ public class Server {
    */
   protected boolean updateFieldValue(String field, boolean value) throws QueryException {
     return updateFieldValue(field, (value ? "1" : "0"));
-  }
-
-  /**
-   * Get the value of ID
-   *
-   * @return the value of ID
-   */
-  public int getID() {
-    return ID;
   }
 
   /**
@@ -801,6 +802,11 @@ public class Server {
    * @return
    */
   public Integer getUptime() {
+    try {
+      this.fillServerInfo();
+    } catch (QueryException ex) {
+      Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+    }
     return uptime;
   }
 
@@ -885,7 +891,16 @@ public class Server {
         return client;
       }
     }
-    return null;
+    Client c;
+    try {
+      // maybe client is just not registered yet, look him up..
+      c = new Client(id, this);
+    } catch (QueryException ex) {
+      // client does not exist
+      return null;
+    }
+    // return the client when found
+    return c;
   }
 
   /**
@@ -928,4 +943,31 @@ public class Server {
   /*public DBClient getClientFromDBbyPattern(String pattern) {
 
    }*/
+  /**
+   *
+   * @param message
+   * @return
+   * @throws QueryException
+   */
+  public boolean sendMessage(String message) throws QueryException {
+    return this.queryInterface.qCon.sendTextMessage(this, message);
+  }
+
+  /**
+   *
+   * @return
+   */
+  public Channel getDefaultChannel() {
+    if (defaultChannel != null) {
+      return defaultChannel;
+    } else {
+      try {
+        this.fillServerInfo();
+        return defaultChannel;
+      } catch (QueryException ex) {
+        Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+      }
+    }
+    return null;
+  }
 }

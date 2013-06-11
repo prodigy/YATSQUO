@@ -19,7 +19,9 @@
  */
 package net.servertube.yatsquo;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import net.servertube.yatsquo.Data.Codec;
 
 /**
@@ -28,9 +30,8 @@ import net.servertube.yatsquo.Data.Codec;
  *
  * @author Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>
  */
-public class Channel {
+public class Channel extends TS3Object {
 
-  private Integer ID;
   private Server server;
   private String name;
   private String name_phonetic;
@@ -56,6 +57,8 @@ public class Channel {
   private Integer needed_talk_power;
   private Integer icon_id;
 
+  private List<Client> clients;
+
   /**
    * When initializing a new Channel object with this constructor the library
    * <br />will fetch all necessary data from the query port.<br />
@@ -67,6 +70,7 @@ public class Channel {
   public Channel(Integer ID, Server server) throws QueryException {
     this.ID = ID;
     this.server = server;
+    this.clients = new ArrayList<>();
     this.fillChannelInfo();
     this.registerChannel();
   }
@@ -238,6 +242,14 @@ public class Channel {
     server.registerChannel(this);
   }
 
+  public void registerClient(Client c) {
+    this.clients.add(c);
+  }
+
+  public boolean sendMessage(String message) throws QueryException {
+    return this.server.queryInterface.qCon.sendTextMessage(this, message);
+  }
+
   /**
    * Deletes the Channel from the server and destroy the object
    *
@@ -285,15 +297,6 @@ public class Channel {
     this.order = Integer.valueOf(info.get("channel_order"));
     this.parentID = Integer.valueOf(info.get("pid"));
     this.topic = info.get("channel_topic");
-  }
-
-  /**
-   * Get the value of ID
-   *
-   * @return the value of ID
-   */
-  public Integer getID() {
-    return ID;
   }
 
   /**
@@ -406,7 +409,7 @@ public class Channel {
    *
    * @return boolean default
    */
-  public boolean isIsDefaultChannel() {
+  public boolean isDefaultChannel() {
     return isDefault;
   }
 
@@ -434,7 +437,7 @@ public class Channel {
    *
    * @return boolean permanent
    */
-  public boolean isIsPermanent() {
+  public boolean isPermanent() {
     return isPermanent;
   }
 
@@ -458,7 +461,7 @@ public class Channel {
    *
    * @return boolean semi permanent
    */
-  public boolean isIsSemiPermanent() {
+  public boolean isSemiPermanent() {
     return isSemiPermanent;
   }
 
@@ -720,5 +723,13 @@ public class Channel {
    */
   public boolean isPasswordProtected() {
     return isPasswordProtected;
+  }
+
+  /**
+   * returns a list object filled with clients currently registered to this channel
+   * @return
+   */
+  public List<Client> getClients() {
+    return clients;
   }
 }

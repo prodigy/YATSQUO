@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.servertube.yatsquo.Data.ErrorCodes;
+import net.servertube.yatsquo.Data.TextMessageTargetMode;
 
 /**
  *
@@ -48,6 +49,7 @@ public class QueryConnection {
   private boolean bConnected = false;
   private int connectionErrors = 0;
   private Integer serverID = null;
+  private Integer clientID = null;
 
   /**
    * initializes a new query connection to the given ip and port and<br />
@@ -76,6 +78,8 @@ public class QueryConnection {
     connect(ip, port);
     if ((user != null && !user.isEmpty()) || (pass != null && !pass.isEmpty())) {
       login(user, pass);
+      HashMap<String, String> iam = whoAmI();
+      this.clientID = Integer.valueOf(iam.get("client_id"));
     }
   }
 
@@ -308,6 +312,49 @@ public class QueryConnection {
     return selectVirtualserver(Integer.valueOf(id));
   }
 
+  /**
+   * Sends a text message to a child of a TS3Object.<br />
+   * This can be either a Server, Channel or Client.
+   *
+   * @param object
+   * @param message
+   * @return
+   * @throws QueryException
+   */
+  public boolean sendTextMessage(TS3Object object, String message) throws QueryException {
+    HashMap<String, Object> params = new HashMap<>();
+    if (object instanceof Server) {
+      params.put("targetmode", TextMessageTargetMode.SERVER.getId());
+    } else if (object instanceof Channel) {
+      params.put("targetmode", TextMessageTargetMode.CHANNEL.getId());
+    } else if (object instanceof Client) {
+      params.put("targetmode", TextMessageTargetMode.CLIENT.getId());
+    } else {
+      return false;
+    }
+    params.put("target", object.getID());
+    params.put("msg", message);
+    QueryResponse response = this.executeCommand(new QueryCommand("sendtextmessage", params));
+    if (response.hasError()) {
+      throw new QueryException("See data: msg", response.getErrorResponse());
+    }
+    return true;
+  }
+
+  /**
+   * returns a query response with who i am
+   *
+   * @return
+   * @throws QueryException
+   */
+  public HashMap<String, String> whoAmI() throws QueryException {
+    QueryResponse qr = this.executeCommand(new QueryCommand("whoami"));
+    if (qr.hasError()) {
+      return null;
+    }
+    return qr.getDataResponse().get(0);
+  }
+
   protected String getIp() {
     return ip;
   }
@@ -322,5 +369,13 @@ public class QueryConnection {
 
   protected String getPass() {
     return pass;
+  }
+
+  public Integer getServerID() {
+    return serverID;
+  }
+
+  public Integer getClientID() {
+    return clientID;
   }
 }

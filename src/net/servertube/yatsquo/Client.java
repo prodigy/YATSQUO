@@ -21,16 +21,16 @@ package net.servertube.yatsquo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import net.servertube.yatsquo.Data.TextMessageTargetMode;
 
 /**
  *
  * @author Sebastian "prodigy" Grunow <sebastian.gr at servertube.net>
  */
-public class Client {
+public class Client extends TS3Object {
 
   private Server server;
   private Channel channel;
-  private Integer client_id;
   private Integer database_id;
   private String uuid;
   private String nickname;
@@ -86,7 +86,7 @@ public class Client {
    */
   public Client(Integer ID, Server server) throws QueryException {
     this.server = server;
-    this.client_id = ID;
+    this.ID = ID;
     this.fillClientInfo();
     this.registerClient();
   }
@@ -107,7 +107,7 @@ public class Client {
    * @throws QueryException
    */
   private void fillClientInfo() throws QueryException {
-    QueryResponse qr = server.executeCommand(new QueryCommand("clientinfo").param("clid", this.client_id));
+    QueryResponse qr = server.executeCommand(new QueryCommand("clientinfo").param("clid", this.ID));
     if (qr.hasError()) {
       throw new QueryException("Error retrieving Client info: ", qr.getErrorResponse());
     }
@@ -115,6 +115,7 @@ public class Client {
     HashMap<String, String> info = qr.getDataResponse().get(0);
 
     this.channel = server.getChannelByID(Integer.valueOf(info.get("cid")));
+    this.channel.registerClient(this);
     this.database_id = Integer.valueOf(info.get("client_database_id"));
     this.uuid = info.get("client_unique_identifier");
     this.nickname = info.get("client_nickname");
@@ -170,12 +171,208 @@ public class Client {
     server.registerClient(this);
   }
 
+  public boolean sendMessage(String message) throws QueryException {
+    return this.server.queryInterface.qCon.sendTextMessage(this, message);
+  }
+
+  public Server getServer() {
+    return server;
+  }
+
+  public Channel getChannel() {
+    return channel;
+  }
+
   /**
    * returns the client ID
    *
    * @return
    */
   public Integer getClientID() {
-    return client_id;
+    return ID;
+  }
+
+  public Integer getDatabaseID() {
+    return database_id;
+  }
+
+  public String getUUID() {
+    return uuid;
+  }
+
+  public String getNickname() {
+    return nickname;
+  }
+
+  public String getNickname_phonetic() {
+    return nickname_phonetic;
+  }
+
+  public String getVersion() {
+    return version;
+  }
+
+  public String getPlatform() {
+    return platform;
+  }
+
+  public String getDefaultChannel() {
+    return default_channel;
+  }
+
+  public Boolean getAway() {
+    return away;
+  }
+
+  public String getAwayMessage() {
+    return away_message;
+  }
+
+  public String getMetaData() {
+    return meta_data;
+  }
+
+  public Boolean getIsRecording() {
+    return is_recording;
+  }
+
+  public Integer getIdleTime() {
+    return idle_time;
+  }
+
+  public Integer getChannelGroupID() {
+    return channel_group_id;
+  }
+
+  public ArrayList<Integer> getServergroups() {
+    return servergroups;
+  }
+
+  public String getLoginName() {
+    return login_name;
+  }
+
+  public Long getCreated() {
+    return created;
+  }
+
+  public Long getLastconnected() {
+    return lastconnected;
+  }
+
+  public Integer getTotalConnections() {
+    return totalConnections;
+  }
+
+  public Integer getType() {
+    return type;
+  }
+
+  public Integer getTalkPower() {
+    return talk_power;
+  }
+
+  public Boolean getIsTalker() {
+    return is_talker;
+  }
+
+  public Boolean getInputMuted() {
+    return input_muted;
+  }
+
+  public Boolean getOutputMuted() {
+    return output_muted;
+  }
+
+  public Boolean getOutputonlyMuted() {
+    return outputonly_muted;
+  }
+
+  public Boolean getInputHardware() {
+    return input_hardware;
+  }
+
+  public Boolean getOutputHardware() {
+    return output_hardware;
+  }
+
+  public Integer getMonthBytesUploaded() {
+    return month_bytes_uploaded;
+  }
+
+  public Integer getMonthBytesDownloaded() {
+    return month_bytes_downloaded;
+  }
+
+  public Integer getTotalBytesUploaded() {
+    return total_bytes_uploaded;
+  }
+
+  public Integer getTotalBytesDownloaded() {
+    return total_bytes_downloaded;
+  }
+
+  public Boolean getIsPrioritySpeaker() {
+    return is_priority_speaker;
+  }
+
+  public Boolean getIsChannelCommander() {
+    return is_channel_commander;
+  }
+
+  public Integer getIconID() {
+    return icon_id;
+  }
+
+  public String getBase64HashClientUID() {
+    return base64HashClientUID;
+  }
+
+  public Long getFiletransferBandwidthSent() {
+    return filetransfer_bandwidth_sent;
+  }
+
+  public Long getFiletransferBandwidthReceived() {
+    return filetransfer_bandwidth_received;
+  }
+
+  public Long getPacketsSentTotal() {
+    return packets_sent_total;
+  }
+
+  public Long getBytesSentTotal() {
+    return bytes_sent_total;
+  }
+
+  public Long getPacketsReceivedTotal() {
+    return packets_received_total;
+  }
+
+  public Long getBytesReceivedTotal() {
+    return bytes_received_total;
+  }
+
+  public Long getBandwidthSentLastSecondTotal() {
+    return bandwidth_sent_last_second_total;
+  }
+
+  public Long getBandwidthSentLastMinuteTotal() {
+    return bandwidth_sent_last_minute_total;
+  }
+
+  public Long getBandwidthReceivedLastSecondTotal() {
+    return bandwidth_received_last_second_total;
+  }
+
+  public Long getBandwidthReceivedLastMinuteTotal() {
+    return bandwidth_received_last_minute_total;
+  }
+
+  public Long getConnectedTime() {
+    return connected_time;
+  }
+
+  public String getClientIP() {
+    return client_ip;
   }
 }

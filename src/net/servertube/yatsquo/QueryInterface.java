@@ -22,6 +22,7 @@ package net.servertube.yatsquo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
+import net.servertube.yatsquo.Data.EventType;
 
 /**
  *
@@ -50,6 +51,10 @@ public class QueryInterface {
    * The query connection
    */
   public QueryConnection qCon = null;
+  /**
+   *
+   */
+  private QueryListener QIListener = null;
 
   /**
    * Creates a new QueryInterface object with given parameters.
@@ -76,6 +81,16 @@ public class QueryInterface {
    */
   private void initialize(String ip, int port, String user, String passwd) throws QueryException {
     this.qCon = new QueryConnection(ip, port, user, passwd);
+    this.listeners = new ArrayList<>();
+    this.QIListener = new QueryListener(qCon, serverID, ip) {
+      @Override
+      public void executeEvent(EventType type, HashMap<String, String> data) {
+        // NOP
+      }
+    };
+    this.QIListener.registerEvent(EventType.REGISTER_TEXT_PRIVATE, null);
+    this.QIListener.registerEvent(EventType.REGISTER_TEXT_CHANNEL, null);
+    this.QIListener.registerEvent(EventType.REGISTER_TEXT_SERVER, null);
     this.fillServerList();
   }
 
@@ -104,20 +119,6 @@ public class QueryInterface {
    */
   public List<QueryListener> getQueryListeners() {
     return listeners;
-  }
-
-  /**
-   * returns a query response with who i am
-   *
-   * @return
-   * @throws QueryException
-   */
-  public HashMap<String, String> whoAmI() throws QueryException {
-    QueryResponse qr = this.qCon.executeCommand(new QueryCommand("whoami"));
-    if (qr.hasError()) {
-      return null;
-    }
-    return qr.getDataResponse().get(0);
   }
 
   /**
@@ -205,5 +206,23 @@ public class QueryInterface {
    */
   protected void registerServer(Server server) {
     this.servers.add(server);
+  }
+
+  /**
+   *
+   * @param newName
+   * @return
+   * @throws QueryException
+   */
+  public boolean changeQueryClientName(String newName) throws QueryException {
+    HashMap<String, Object> params = new HashMap<>();
+    params.put("client_nickname", newName);
+    /*
+    //change the name of all registered query listeners, too
+    for(QueryListener l : this.listeners) {
+      l.changeQueryClientName(newName);
+    }
+    */
+    return !this.qCon.executeCommand(new QueryCommand("clientupdate", params)).hasError();
   }
 }

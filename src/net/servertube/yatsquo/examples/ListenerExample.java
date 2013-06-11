@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.servertube.yatsquo.Data.EventType;
+import net.servertube.yatsquo.Data.TextMessageTargetMode;
 import net.servertube.yatsquo.QueryException;
 import net.servertube.yatsquo.QueryInterface;
 import net.servertube.yatsquo.QueryListener;
@@ -40,6 +41,7 @@ public class ListenerExample {
       System.out.println("Creating queryInterface...");
       QueryInterface qi = new QueryInterface(args[0], Integer.valueOf(args[1]), args[2], args[3]);
       System.out.println("Creating Query Listener...");
+      qi.qCon.sendTextMessage(qi.getServers().get(0), "Hello!");
       QueryListener ql = new QueryListener(qi, qi.getServers().get(0).getID()) {
         @Override
         public void executeEvent(EventType type, HashMap<String, String> data) {
@@ -48,7 +50,6 @@ public class ListenerExample {
           for (String key : data.keySet()) {
             System.out.println("  " + key + " = " + data.get(key));
           }
-          //System.exit(0);
         }
       };
       ql.registerEvent(EventType.REGISTER_TEXT_SERVER, null);
